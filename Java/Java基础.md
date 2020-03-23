@@ -7,7 +7,7 @@
 * [clone方法](#clone方法)
 * [equals和hashcode方法](#equals和hashcode方法)
 * [wait、notify、notifyAll方法](#wait、notify、notifyall方法)
-* [finalize、getClass、toString方法]
+* [finalize、getClass、toString方法]finalize、getClass、toString方法
 
 
 
@@ -136,3 +136,9 @@ wait方法：让该对象所属的线程进入睡眠状态并释放锁，直到�
 ### wait方法和Thread.sleep方法的区别
 * sleep：会让该线程进入等待状态，但是不会释放锁，让出cpu去执行其他线程。
 * wait：会让当前获得该对象锁的线程进入等待状态，会释放锁。
+
+
+## finalize、getClass、toString方法
+* finalize:用于释放资源，在垃圾回收机制里面是对象自我拯救的一种方式
+* getClass：获取运行时类型
+* toString：根据对象内容返回一个字符串，经常重写该方法
