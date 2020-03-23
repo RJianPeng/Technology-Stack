@@ -7,7 +7,7 @@
 * [clone方法](#clone方法)
 * [equals和hashcode方法](#equals和hashcode方法)
 * [wait、notify、notifyAll方法](#wait、notify、notifyall方法)
-* [finalize、getClass、toString方法]finalize、getClass、toString方法
+* [finalize、getClass、toString方法](#finalize、getClass、toString方法)
 
 
 
