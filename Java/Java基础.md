@@ -1,7 +1,7 @@
 * [一、字符串](#一字符串)
-* [string](#string)
-* [StringBuilder]
-* [StringBuffer]
+* [String](#string)
+* [StringBuilder](#stringbuilder)
+* [StringBuffer](#stringbuffer)
 
 * [二、Object九大通用方法]
 * [clone方法]
@@ -57,3 +57,38 @@ true
 true
 false
 ```
+### String不可变的优势
+* 1.天然的保证了线程安全
+* 2.可以缓存String的hash值，因为String不可变所以它的hash值也不可变
+* 3.可以保证作为参数不可变
+
+## StringBuilder
+相比于String，StringBuilder是可变的字符串对象，对它的修改并不会新建一个对象。
+StringBuilder内部也是使用一个char的数组来存储字符串，不同的是数组的长度会在字符串增长时进行动态扩展。
+扩展的逻辑：
+首先判定是否需要扩展，如果新字符串的长度大于数组长度则进行扩展,否则无需扩展：
+```
+// overflow-conscious code
+if (minimumCapacity - value.length > 0) {
+    value = Arrays.copyOf(value,
+            newCapacity(minimumCapacity));
+}
+```
+扩展的规则为，旧数组长度*2+2，若该值小于新字符串长度，则采用新字符串长度，否则采用该值：
+```
+private int newCapacity(int minCapacity) {
+    // overflow-conscious code
+    int newCapacity = (value.length << 1) + 2;
+    if (newCapacity - minCapacity < 0) {
+        newCapacity = minCapacity;
+    }
+    return (newCapacity <= 0 || MAX_ARRAY_SIZE - newCapacity < 0)
+        ? hugeCapacity(minCapacity)
+        : newCapacity;
+}
+```
+
+
+## StringBuffer
+StringBuffer，与StringBuilder同样继承于AbstractStringBuilder，所以也是可变的字符串对象，大部分逻辑与StringBuilder相同，包括数组的动态扩展。
+StringBuffer与StringBuilder的不同之处在于StringBuffer采用了synchronized进行一个加锁的操作。保证了多线程场景下的线程安全。
