@@ -5,8 +5,8 @@
 
 * [二、Object九大通用方法](#二object九大通用方法)
 * [clone方法](#clone方法)
-* [equals和hashcode方法]
-* [wait、notify、notifyAll方法]
+* [equals和hashcode方法](#equals和hashcode方法)
+* [wait、notify、notifyAll方法](#wait、notify、notifyall方法)
 * [finalize、getClass、toString方法]
 
 
@@ -57,7 +57,7 @@ true
 true
 false
 ```
-### String不可变的优势
+#### String不可变的优势
 * 1.天然的保证了线程安全
 * 2.可以缓存String的hash值，因为String不可变所以它的hash值也不可变
 * 3.可以保证作为参数不可变
@@ -96,7 +96,7 @@ StringBuffer与StringBuilder的不同之处在于StringBuffer采用了synchroniz
 # 二、Object九大通用方法
 ## clone方法
 实现对象的复制，需要实现Cloneable接口
-### new一个对象和clone一个对象的区别
+#### new一个对象和clone一个对象的区别
 new 操作符的本意是分配内存。程序执行到 new 操作符时，首先去看 new 操作符后面的类型，因为知道了类型， 
 才能知道要分配多大的内存空间。分配完内存之后，再调用构造函数，填充对象的各个域，这一步叫做对象的初始化，构造方法返回后，一个对象创建完毕，可以把他的引用（地址）发布到外部，在外部就可以使用这个引用操纵这个对象。
 
@@ -104,6 +104,31 @@ clone 在第一步是和 new 相似的，都是分配内存，调用 clone 方�
 的对象）相同，然后再使用原对象中对应的各个域，填充新对象的域，填充完成之后，clone 方法返回，一个新的相同 
 的对象被创建，同样可以把这个新对象的引用发布到外部。
 
-### 深拷贝和浅拷贝
+#### 深拷贝和浅拷贝
 浅拷贝：被复制对象的所有值属性都含有与原来对象的相同，而所有的对象引用属性仍然指向原来的对象。（只把最外层的对象的属性复制一份，其中的引用类型只复制引用的地址）
 深拷贝：在浅拷贝的基础上，所有引用其他对象的变量也进行了clone，并指向被复制过的新对象。（在浅拷贝的基础上，对成员中的引用类型的成员也复制一份）
+
+
+## equals和hashcode方法
+equals和hashcode方法都可以用来判定两个方法是否相同。不过他们的判定方式不同，从Java8的源码来看，equals方法：
+```
+public boolean equals(Object obj) {
+        return (this == obj);
+}
+```
+equals方法是直接通过==来判定两个对象是否相等，==的方式要求对象不止内容相同，而且地址也相同，即必须是同一个对象才会返回true
+hashcode方法是通过计算两个对象的hash值，通过hash值来判定是否两个对象是否相同。equals（）返回为true的两个对象hashcode（）一定相等，hashcode（）相等的两个对象equals（）不一定返回为true
+
+#### 为何重写hashcode就要重写equals
+java.lang.Object中的约定：
+* 1. 在一个应用程序执行期间，如果一个对象的equals方法做比较所用到的信息没有被修改的话，则对该对象调用hashCode方法多次，它必须始终如一地返回同一个整数。
+* 2. 如果两个对象根据equals(Object o)方法是相等的，则调用这两个对象中任一对象的hashCode方法必须产生相同的整数结果。
+* 3. 如果两个对象根据equals(Object o)方法是不相等的，则调用这两个对象中任一个对象的hashCode方法，不要求产生不同的整数结果。但如果能不同，则可能提高散列表的性能。 
+* 如果不遵守约定，就会出现问题，比如hashset中，会通过hashcode来分配位置，如果重写了equals方法而没有重写hashcode，那么可能会导致两个equals方法返回为true的两个对象都可以被放入hashset中，这样会出现问题。所以equals需要和hashcode方法同时重写。
+
+## wait、notify、notifyAll方法
+wait方法：让该对象所属的线程进入睡眠状态并释放锁，直到以下事件发生：
+* 1.其他线程调用了该对象的notify方法
+* 2.其他线程调用了该对象的notifyAll方法
+* 3.其他线程调用了interrupt中断该线程
+* 4.等待时间结束
