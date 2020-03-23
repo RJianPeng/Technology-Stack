@@ -3,8 +3,8 @@
 * [StringBuilder](#stringbuilder)
 * [StringBuffer](#stringbuffer)
 
-* [二、Object九大通用方法]
-* [clone方法]
+* [二、Object九大通用方法](#二object九大通用方法)
+* [clone方法](#clone方法)
 * [equals和hashcode方法]
 * [wait、notify、notifyAll方法]
 * [finalize、getClass、toString方法]
@@ -92,3 +92,18 @@ private int newCapacity(int minCapacity) {
 ## StringBuffer
 StringBuffer，与StringBuilder同样继承于AbstractStringBuilder，所以也是可变的字符串对象，大部分逻辑与StringBuilder相同，包括数组的动态扩展。
 StringBuffer与StringBuilder的不同之处在于StringBuffer采用了synchronized进行一个加锁的操作。保证了多线程场景下的线程安全。
+
+# 二、Object九大通用方法
+## clone方法
+实现对象的复制，需要实现Cloneable接口
+### new一个对象和clone一个对象的区别
+new 操作符的本意是分配内存。程序执行到 new 操作符时，首先去看 new 操作符后面的类型，因为知道了类型， 
+才能知道要分配多大的内存空间。分配完内存之后，再调用构造函数，填充对象的各个域，这一步叫做对象的初始化，构造方法返回后，一个对象创建完毕，可以把他的引用（地址）发布到外部，在外部就可以使用这个引用操纵这个对象。
+
+clone 在第一步是和 new 相似的，都是分配内存，调用 clone 方法时，分配的内存和原对象（即调用 clone 方法 
+的对象）相同，然后再使用原对象中对应的各个域，填充新对象的域，填充完成之后，clone 方法返回，一个新的相同 
+的对象被创建，同样可以把这个新对象的引用发布到外部。
+
+### 深拷贝和浅拷贝
+浅拷贝：被复制对象的所有值属性都含有与原来对象的相同，而所有的对象引用属性仍然指向原来的对象。（只把最外层的对象的属性复制一份，其中的引用类型只复制引用的地址）
+深拷贝：在浅拷贝的基础上，所有引用其他对象的变量也进行了clone，并指向被复制过的新对象。（在浅拷贝的基础上，对成员中的引用类型的成员也复制一份）
