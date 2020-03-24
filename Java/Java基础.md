@@ -6,13 +6,12 @@
 * [二、Object九大通用方法](#二object九大通用方法)
 * [clone方法](#clone方法)
 * [equals和hashcode方法](#equals和hashcode方法)
-* [wait、notify、notifyAll方法](#wait、notify、notifyall方法)
-* [finalize、getClass、toString方法](#finalize、getClass、toString方法)
+* [wait、notify、notifyAll方法](#waitnotifynotifyall方法)
+* [finalize、getClass、toString方法](#finalizegetclasstostring方法)
 
-* [三、Java的关键字](#三java的关键字)
-
-
-
+* [三、Java关键字](#三java关键字)
+* [private、public、default和protected](#privatepublicdefault和protected)
+* [volatile和synchronized](#volatile和synchronized)
 
 # 一、字符串
 ## String
@@ -144,3 +143,21 @@ wait方法：让该对象所属的线程进入睡眠状态并释放锁，直到�
 * finalize:用于释放资源，在垃圾回收机制里面是对象自我拯救的一种方式
 * getClass：获取运行时类型
 * toString：根据对象内容返回一个字符串，经常重写该方法
+
+
+# 三、Java关键字
+## private、public、default和protected
+这四个Java关键字都是关于Java中类成员的访问权限的关键字。
+### private
+用该关键字修饰的类的成员和方法只有这个对象自己能够访问。
+
+### public
+用该关键字修饰的类的成员和方法所有的对象都可以访问。
+
+### default
+用该关键字修饰的类的成员和方法同一个包下的类可以访问
+
+### protected
+用该关键字修饰的类的成员和方法在同一个包下的类以及这个类的子类可以访问
+
+## volatile和synchronized
