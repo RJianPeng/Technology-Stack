@@ -3,6 +3,7 @@
 
 ## Java
    - [Java基础](./Java/Java基础.md)
+   - [Java虚拟机](./Java/Java虚拟机.md)
 
 ## 计算机网络
 
