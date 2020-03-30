@@ -2,6 +2,7 @@
 * [第三章 lambda表达式](#第三章lambda表达式)
 * [第四章 引入流](#第四章引入流)
 * [第五章 使用流](#第五章使用流)
+* [第六章 用流收集数据](#第六章用流收集数据)
 
 # 第一章、为什么要关心Java8
 ### 1.1.2 流处理
@@ -167,3 +168,34 @@ Stream API提供了两个静态方法来从函数生成流：Stream.iterate和St
                 .forEach(a->System.out.println(a));
  ```
  不能直接对无限流进行排序和归约，因为所有元素都需要处理，这永远也完不成。
+
+
+# 第六章、用流收集数据
+流可以用类似于数据库对操作帮助你处理集合，可以把流看作花哨又懒惰对数据集迭代器。他们支持两种类型的操作：中间操作和终端操作。中间操作可以链接起来，将一个流转换成另一个流，而终端操作会消耗流产生一个最终结果。
+## 6.2 归约和汇总
+但凡要把流中的所有项目合并成一个结果时就可以用收集器。
+* 预定义收集器：从Collectors类提供的工厂方法创建的收集器。
+### 6.2.1 查找流中的最大值和最小值
+```
+Collectors.maxBy() //获取最大值的收集器
+Collectors.minBy() //获取最小值的收集器
+```
+使用方式：
+```
+List<Dish> dishes = new ArrayList<>();
+Optional<Dish> optionalDishMax = dishes.stream()
+        .collect(Collectors.maxBy(Comparator.comparing(Dish::getCalories))); //maxBy的参数为一个comparator
+
+Optional<Dish> optionalDishMin = dishes.stream()
+        .collect(Collectors.minBy(Comparator.comparing(Dish::getCalories))); //maxBy的参数为一个comparator
+```
+### 6.2.2 汇总
+```
+Collectors.summingInt() //接受一个把对象映射为求和所需的int的函数
+```
+使用方式：
+```
+int allCalories = dishes.stream()
+                .collect(Collectors.summingInt(Dish::getCalories));
+System.out.println(allCalories);
+```
