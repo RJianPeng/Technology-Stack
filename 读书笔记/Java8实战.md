@@ -199,3 +199,47 @@ int allCalories = dishes.stream()
                 .collect(Collectors.summingInt(Dish::getCalories));
 System.out.println(allCalories);
 ```
+还有summingLong和summingDouble，作用一样只是返回类型不同。
+
+汇总不只是求和还可以计算平均数：Collectors.averagintInt()
+```
+double averageCalories = dishes.stream()
+                .collect(Collectors.averagingInt(Dish::getCalories)); //返回值为double averagingDouble和averagingLong的返回值都是double
+```
+Collectors.summarizingInt():一次操作就返回菜单中元素的个数、并得到总和、平均值、最大值和最小值。
+```
+IntSummaryStatistics intSummaryStatistics = dishes.stream()
+                .collect(Collectors.summarizingInt(Dish::getCalories));
+double average = intSummaryStatistics.getAverage();//平均值
+long count = intSummaryStatistics.getCount();//数量
+int max = intSummaryStatistics.getMax();//最大值
+int min = intSummaryStatistics.getMin();//最小值
+long sum = intSummaryStatistics.getSum();//总和
+```
+### 6.2.3 连接字符串
+Collectors.join()：会把流中每个字符串连接起来。内部使用了StringBuilder将字符串拼接起来.
+```
+String menu = dishes.stream()
+                .map(Dish::getName)
+                .collect(Collectors.joining());//字符串拼接方式1：简单的拼接
+
+String menu1 = dishes.stream()
+        .map(Dish::getName)
+        .collect(Collectors.joining("，"));//字符串拼接方式2，中间加间隔符的拼接
+
+String menu2 = dishes.stream()
+        .map(Dish::getName)
+        .collect(Collectors.joining(",","(",")"));//字符串拼接方式3：加开头、结尾和间隔符的拼接
+```
+
+## 6.3 分组
+分组：根据一个或多个属性对集合中的项目进行分组。
+Collectors.groupingBy()来实现分组
+```
+//这里给groupingBy方法传递一个function，这个function称为分类函数，groupingBy方法用它来把流中的元素进行分组。分组操作的结果是个map。
+Map<String,List<Dish>> map = dishes.stream()
+                .collect(Collectors.groupingBy(Dish::getType));//分类函数返回值为key，流中的元素为value中的值
+```
+
+### 6.3.1 多级分组
+
