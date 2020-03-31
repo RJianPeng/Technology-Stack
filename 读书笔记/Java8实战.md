@@ -172,6 +172,9 @@ Stream API提供了两个静态方法来从函数生成流：Stream.iterate和St
 
 # 第六章、用流收集数据
 流可以用类似于数据库对操作帮助你处理集合，可以把流看作花哨又懒惰对数据集迭代器。他们支持两种类型的操作：中间操作和终端操作。中间操作可以链接起来，将一个流转换成另一个流，而终端操作会消耗流产生一个最终结果。
+
+## 收集器源码功能解析
+
 ## 6.2 归约和汇总
 但凡要把流中的所有项目合并成一个结果时就可以用收集器。
 * 预定义收集器：从Collectors类提供的工厂方法创建的收集器。
@@ -203,8 +206,9 @@ System.out.println(allCalories);
 
 汇总不只是求和还可以计算平均数：Collectors.averagintInt()
 ```
+//返回值为double averagingDouble和averagingLong的返回值都是double
 double averageCalories = dishes.stream()
-                .collect(Collectors.averagingInt(Dish::getCalories)); //返回值为double averagingDouble和averagingLong的返回值都是double
+                .collect(Collectors.averagingInt(Dish::getCalories)); 
 ```
 Collectors.summarizingInt():一次操作就返回菜单中元素的个数、并得到总和、平均值、最大值和最小值。
 ```
@@ -242,4 +246,23 @@ Map<String,List<Dish>> map = dishes.stream()
 ```
 
 ### 6.3.1 多级分组
+实现多级分组，可以使用groupingBy进行嵌套生成Map<?,Map<?,List>>这种类型
+```
+//这里第一个groupingBy方法有两个参数，第一个是分组的key，第二个是collector。 
+//可以理解为按照第一个参数将流中的元素分组，之后使用第二个参数将每个组里的元素分别归约起来 这种使用方式也可以用用于在分组中收集数据
+Map<String, Map<String, List<Dish>>> map1 = dishes.stream()
+        .collect(Collectors.groupingBy(Dish::getType,Collectors.groupingBy(Dish::getName)));
+```
+
+### 6.3.2 按子组收集数据
+可以采用6.3.1中那种groupingBy的使用方式收集数据。
+Collectors.collectingAndThen():可以将收集器的结果转换为另一种类型。
+使用方式：
+```
+//可以看作将第二个参数的方法拼接在第一个参数行为之后
+Map<String,Dish> map2 = dishes.stream()
+        .collect(Collectors.groupingBy(Dish::getName,
+                Collectors.collectingAndThen(Collectors.maxBy(Comparator.comparing(Dish::getCalories))
+                        ,Optional::get)));
+```
 
