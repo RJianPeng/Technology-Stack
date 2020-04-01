@@ -266,3 +266,57 @@ Map<String,Dish> map2 = dishes.stream()
                         ,Optional::get)));
 ```
 
+## 6.4 分区
+分区是分组的特殊情况：由一个谓词（返回值为boolean的函数）作为分类函数，意味着分组的key是boolean，于是最多可以分为两组。
+
+Collectors.partitioningBy():分区函数，里面的参数第一个为返回值为true/false的分类函数，第二个为collector，与groupingBy的使用方式类似，第二个参数不是必须的。
+
+### 6.4.1 分区的优势
+* 保留了分区函数返回true和false的两套流元素列表。
+
+## 6.5 收集器接口
+Collector源码解读：
+```
+// T是流中要收集的元素的类型
+// A是累加器的类型，累加器是收集过程中用于累计部分结果的对象
+// R是收集操作得到的对象（通常是集合）
+public interface Collector<T, A, R> {
+    Supplier<A> supplier();
+
+    BiConsumer<A, T> accumulator();
+    
+    BinaryOperator<A> combiner();
+    
+    Function<A, R> finisher();
+    
+    Set<Characteristics> characteristics();
+
+    enum Characteristics {
+        /**
+         * Indicates that this collector is <em>concurrent</em>, meaning that
+         * the result container can support the accumulator function being
+         * called concurrently with the same result container from multiple
+         * threads.
+         *
+         * <p>If a {@code CONCURRENT} collector is not also {@code UNORDERED},
+         * then it should only be evaluated concurrently if applied to an
+         * unordered data source.
+         */
+        CONCURRENT,
+
+        /**
+         * Indicates that the collection operation does not commit to preserving
+         * the encounter order of input elements.  (This might be true if the
+         * result container has no intrinsic order, such as a {@link Set}.)
+         */
+        UNORDERED,
+
+        /**
+         * Indicates that the finisher function is the identity function and
+         * can be elided.  If set, it must be the case that an unchecked cast
+         * from A to R will succeed.
+         */
+        IDENTITY_FINISH
+    }
+}
+```
