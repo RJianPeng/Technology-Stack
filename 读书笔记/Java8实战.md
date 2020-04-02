@@ -281,42 +281,49 @@ Collector源码解读：
 // A是累加器的类型，累加器是收集过程中用于累计部分结果的对象
 // R是收集操作得到的对象（通常是集合）
 public interface Collector<T, A, R> {
+    /**
+    *返回一个建立新的结果容器的Supplier方法：（）->返回一个容器
+    */
     Supplier<A> supplier();
 
+    /**
+    *返回一个将元素添加到结果容器的方法：（a,b）->返回为void
+    */
     BiConsumer<A, T> accumulator();
     
+    /**
+    *返回合并两个结果容器的方法：（a,b）-)返回一个c。定义了流并行归约的时候，归约的结果如何合并。
+    */
     BinaryOperator<A> combiner();
     
+    /**
+    *返回一个对结果容器应用最终转换的方法：（a）->返回一个b
+    */
     Function<A, R> finisher();
     
+    /**
+    *返回了一系列特征，也就是一个提示列表，告诉collect方法在执行归约操作的时候可以应用哪些优化（如并行）
+    */
     Set<Characteristics> characteristics();
 
     enum Characteristics {
         /**
-         * Indicates that this collector is <em>concurrent</em>, meaning that
-         * the result container can support the accumulator function being
-         * called concurrently with the same result container from multiple
-         * threads.
-         *
-         * <p>If a {@code CONCURRENT} collector is not also {@code UNORDERED},
-         * then it should only be evaluated concurrently if applied to an
-         * unordered data source.
+         * accumulator函数可以从多个线程同时调用，且该收集器可以并行归约流。
+         *如果收集器没有标记为UNORDERED,那它仅在用于无序数据源时才可以并行归约
          */
         CONCURRENT,
 
         /**
-         * Indicates that the collection operation does not commit to preserving
-         * the encounter order of input elements.  (This might be true if the
-         * result container has no intrinsic order, such as a {@link Set}.)
+         * 归约结果不受流中项目的遍历和累积顺序的影响
          */
         UNORDERED,
 
         /**
-         * Indicates that the finisher function is the identity function and
-         * can be elided.  If set, it must be the case that an unchecked cast
-         * from A to R will succeed.
+         * 这表明finisher方法返回的函数是一个恒等函数，可以跳过。
          */
         IDENTITY_FINISH
     }
 }
 ```
+### 6.5.2全部融合到一起
+Collections.emptyList():返回一个空列表，这个空列表为单例，不允许操作。Java API提供的收集器在需要返回空列表时返回的就是这个单例。
