@@ -30,8 +30,7 @@ true
 flase
 ```
 由于String的不可变的特性，为了节省内存空间和减少新建销毁字符串对象的开销，Java引入了字符串常量池的概念。
-字符串常量池，可以理解为一块专门存储String的区域，在Java8中，这块区域在堆中。
-（字符串常量池的位置是借鉴了https://blog.csdn.net/MustangJy/article/details/88044964 中的方法，并进行了实测，与该博客中结果一致）
+字符串常量池，可以理解为一块专门存储String的区域，但是他存储的又不是String对象的实例，String对象的实例还是存储在堆中，字符串常量池中存储的只是对象的引用。（具体可见https://www.zhihu.com/question/29884421）
 对于字符串常量池的使用，对开发人员并不是透明的，Java提供了三种创建String的方式：
 ```
 String str1 = "first"; //第一种方式：直接声明
