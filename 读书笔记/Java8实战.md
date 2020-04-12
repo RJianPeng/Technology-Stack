@@ -54,8 +54,6 @@ lambda允许使用自由变量（不是参数，而是在外层作用域中定�
 
 构造函数的方法引用为类名：：new
 
-3.8
-函数组合可以多看看
 # 第四章、引入流
 ## 4.1 流是什么
 * 流是Java API的新成员，它允许你以声明式方式处理数据集合。此外，流还可以透明地并行处理。
@@ -87,7 +85,7 @@ lambda允许使用自由变量（不是参数，而是在外层作用域中定�
 
 ## 5.2 映射：
 * map()接受一个函数作为参数，这个函数会应用到每个元素中，并映射成一个新的元素
-* flatMap()扁平化多个流为一个流 即flatMap方法让你把流中的每一个值都换成另一种流元素，然后把所有的流元素连接起来形成一个新的流
+* flatMap()扁平化多个流为一个流 即flatMap方法接受的方法参数让你把流中的每一个值都换成另一种流元素，然后flatMap把所有的流元素连接起来形成一个新的流
 
 ## 5.3 查找和匹配：
 * anyMatch()校验流中是否至少有一个元素能够匹配给定的谓词 是终端操作
@@ -112,7 +110,7 @@ reduce的使用：
 Stream API提供了原始类型流特化，专门支持处理数值流的方法。
 
 ### 5.6.1 原始类型流特化
-Java8 引入了三个原始类型特化流来处理数值流：IntStream、DoubleStream和LongStream，分别将流中的元素特化为int、long和double，从而避免了暗含的装箱的成本。每个接口都提供了常用数值归约的新方法，比如对数值流求和对sum，找到最大元素对max。
+Java8 引入了三个原始类型特化流来处理数值流：IntStream、DoubleStream和LongStream，分别将流中的元素特化为int、long和double，从而避免了暗含的装箱的成本。每个接口都提供了常用数值归约的新方法，比如对数值流求和的sum，找到最大元素的max。
 
 将流转化为特化版本的常用方法是mapToInt、mapToDouble和mapToLong，这些方法和map()方法的工作方式一样，只是他们返回的是一个特化流，而不是 Stream。
 
@@ -170,7 +168,7 @@ Stream API提供了两个静态方法来从函数生成流：Stream.iterate和St
 
 
 # 第六章、用流收集数据
-流可以用类似于数据库对操作帮助你处理集合，可以把流看作花哨又懒惰对数据集迭代器。他们支持两种类型的操作：中间操作和终端操作。中间操作可以链接起来，将一个流转换成另一个流，而终端操作会消耗流产生一个最终结果。
+流可以用类似于数据库的操作帮助你处理集合，可以把流看作花哨又懒惰对数据集迭代器。他们支持两种类型的操作：中间操作和终端操作。中间操作可以链接起来，将一个流转换成另一个流，而终端操作会消耗流产生一个最终结果。
 
 ## 收集器源码功能解析
 
@@ -189,7 +187,7 @@ Optional<Dish> optionalDishMax = dishes.stream()
         .collect(Collectors.maxBy(Comparator.comparing(Dish::getCalories))); //maxBy的参数为一个comparator
 
 Optional<Dish> optionalDishMin = dishes.stream()
-        .collect(Collectors.minBy(Comparator.comparing(Dish::getCalories))); //maxBy的参数为一个comparator
+        .collect(Collectors.minBy(Comparator.comparing(Dish::getCalories))); //minBy的参数为一个comparator
 ```
 ### 6.2.2 汇总
 ```
