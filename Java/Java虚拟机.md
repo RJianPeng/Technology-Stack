@@ -121,11 +121,11 @@ java虚拟机规范上说所有的对象实例和数组都要在堆上分配，�
 ### 对象的访问定位
 通过虚拟机栈上的引用类型来操作堆上的具体对象，目前主流的访问方式有直接指针和使用句柄两种方式（图片来源《深入理解Java虚拟机》）：
 * 1.句柄访问：
-![句柄访问](https://github.com/RJianPeng/Technology-Stack/blob/master/Java/photo/%E5%8F%A5%E6%9F%84.png)
+<div align="center"> <img src="https://github.com/RJianPeng/Technology-Stack/blob/master/Java/photo/%E5%8F%A5%E6%9F%84.png"/></div><br>
 优势：对象移动的时候只用改变实例数据指针，reference本身不改变
 
 * 2.直接指针：
-![直接指针](https://github.com/RJianPeng/Technology-Stack/blob/master/Java/photo/%E7%9B%B4%E6%8E%A5%E6%8C%87%E9%92%88.png)
+<div align="center"> <img src="https://github.com/RJianPeng/Technology-Stack/blob/master/Java/photo/%E7%9B%B4%E6%8E%A5%E6%8C%87%E9%92%88.png"/></div><br>
 优势：速度快，Sun HotSpot用的这种
 
 ### 对象的内存布局
