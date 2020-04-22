@@ -446,23 +446,14 @@ public final class Optional<T> {
     private final T value;
 
     /**
-     *创建一个空的optional
+     * 创建一个空的optional的构造方法，因为空的optional是单例，所以这里声明为private
      */
     private Optional() {
         this.value = null;
     }
 
     /**
-     * Returns an empty {@code Optional} instance.  No value is present for this
-     * Optional.
-     *
-     * @apiNote Though it may be tempting to do so, avoid testing if an object
-     * is empty by comparing with {@code ==} against instances returned by
-     * {@code Option.empty()}. There is no guarantee that it is a singleton.
-     * Instead, use {@link #isPresent()}.
-     *
-     * @param <T> Type of the non-existent value
-     * @return an empty {@code Optional}
+     * 转换成相应对象并返回静态的空的Optional对象
      */
     public static<T> Optional<T> empty() {
         @SuppressWarnings("unchecked")
@@ -471,48 +462,28 @@ public final class Optional<T> {
     }
 
     /**
-     * Constructs an instance with the value present.
-     *
-     * @param value the non-null value to be present
-     * @throws NullPointerException if value is null
+     * 不为空的Optional的构造方法
      */
     private Optional(T value) {
         this.value = Objects.requireNonNull(value);
     }
 
     /**
-     * Returns an {@code Optional} with the specified present non-null value.
-     *
-     * @param <T> the class of the value
-     * @param value the value to be present, which must be non-null
-     * @return an {@code Optional} with the value present
-     * @throws NullPointerException if value is null
+     * 依据一个不为空的对象创建的Optional对象的静态工厂方法
      */
     public static <T> Optional<T> of(T value) {
         return new Optional<>(value);
     }
 
     /**
-     * Returns an {@code Optional} describing the specified value, if non-null,
-     * otherwise returns an empty {@code Optional}.
-     *
-     * @param <T> the class of the value
-     * @param value the possibly-null value to describe
-     * @return an {@code Optional} with a present value if the specified value
-     * is non-null, otherwise an empty {@code Optional}
+     * 接受一个可以为空的对象，若为空则调用empty静态方法并返回，否则调用of静态方法返回
      */
     public static <T> Optional<T> ofNullable(T value) {
         return value == null ? empty() : of(value);
     }
 
     /**
-     * If a value is present in this {@code Optional}, returns the value,
-     * otherwise throws {@code NoSuchElementException}.
-     *
-     * @return the non-null value held by this {@code Optional}
-     * @throws NoSuchElementException if there is no value present
-     *
-     * @see Optional#isPresent()
+     * 若Optional为空 跑出NoSuchElementException异常，否则返回value
      */
     public T get() {
         if (value == null) {
@@ -522,21 +493,14 @@ public final class Optional<T> {
     }
 
     /**
-     * Return {@code true} if there is a value present, otherwise {@code false}.
-     *
-     * @return {@code true} if there is a value present, otherwise {@code false}
+     * 若Optional为空则返回false，否则返回true
      */
     public boolean isPresent() {
         return value != null;
     }
 
     /**
-     * If a value is present, invoke the specified consumer with the value,
-     * otherwise do nothing.
-     *
-     * @param consumer block to be executed if a value is present
-     * @throws NullPointerException if value is present and {@code consumer} is
-     * null
+     * 接受一个Consumer的参数，该
      */
     public void ifPresent(Consumer<? super T> consumer) {
         if (value != null)
