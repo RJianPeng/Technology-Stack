@@ -500,7 +500,7 @@ public final class Optional<T> {
     }
 
     /**
-     * 接受一个Consumer的参数，该
+     * 接受一个Consumer的参数，该参数中唯一的方法为void accept(T t)，这里的方法即若Optional不为空，则对里面的对象做操作，无需返回值。
      */
     public void ifPresent(Consumer<? super T> consumer) {
         if (value != null)
@@ -508,15 +508,7 @@ public final class Optional<T> {
     }
 
     /**
-     * If a value is present, and the value matches the given predicate,
-     * return an {@code Optional} describing the value, otherwise return an
-     * empty {@code Optional}.
-     *
-     * @param predicate a predicate to apply to the value, if present
-     * @return an {@code Optional} describing the value of this {@code Optional}
-     * if a value is present and the value matches the given predicate,
-     * otherwise an empty {@code Optional}
-     * @throws NullPointerException if the predicate is null
+     * 这个方法接受一个Predicate的函数式接口，其中的方法为boolean test(T t);这里表示若Optional为空则返回当前的Optional对象，否则对value调用test方法，若为true则返回当前Optional对象，否则返回empty（）方法的返回值。这里是通过predicate的行为对Optional的一个筛选方法。
      */
     public Optional<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate);
@@ -527,33 +519,7 @@ public final class Optional<T> {
     }
 
     /**
-     * If a value is present, apply the provided mapping function to it,
-     * and if the result is non-null, return an {@code Optional} describing the
-     * result.  Otherwise return an empty {@code Optional}.
-     *
-     * @apiNote This method supports post-processing on optional values, without
-     * the need to explicitly check for a return status.  For example, the
-     * following code traverses a stream of file names, selects one that has
-     * not yet been processed, and then opens that file, returning an
-     * {@code Optional<FileInputStream>}:
-     *
-     * <pre>{@code
-     *     Optional<FileInputStream> fis =
-     *         names.stream().filter(name -> !isProcessedYet(name))
-     *                       .findFirst()
-     *                       .map(name -> new FileInputStream(name));
-     * }</pre>
-     *
-     * Here, {@code findFirst} returns an {@code Optional<String>}, and then
-     * {@code map} returns an {@code Optional<FileInputStream>} for the desired
-     * file if one exists.
-     *
-     * @param <U> The type of the result of the mapping function
-     * @param mapper a mapping function to apply to the value, if present
-     * @return an {@code Optional} describing the result of applying a mapping
-     * function to the value of this {@code Optional}, if a value is present,
-     * otherwise an empty {@code Optional}
-     * @throws NullPointerException if the mapping function is null
+     * 这个方法接受一个Function类型的函数式接口，这个接口里的方法为R apply(T t); 这里的意思为如果该optional为空则返回empty，否则，会对该Optional对象调用apply方法，并将得到的返回值用Optional做一层封装。这里就是通过Function的行为对optional对象的映射方法，获得一个新的Optional对象。
      */
     public<U> Optional<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper);
@@ -565,21 +531,7 @@ public final class Optional<T> {
     }
 
     /**
-     * If a value is present, apply the provided {@code Optional}-bearing
-     * mapping function to it, return that result, otherwise return an empty
-     * {@code Optional}.  This method is similar to {@link #map(Function)},
-     * but the provided mapper is one whose result is already an {@code Optional},
-     * and if invoked, {@code flatMap} does not wrap it with an additional
-     * {@code Optional}.
-     *
-     * @param <U> The type parameter to the {@code Optional} returned by
-     * @param mapper a mapping function to apply to the value, if present
-     *           the mapping function
-     * @return the result of applying an {@code Optional}-bearing mapping
-     * function to the value of this {@code Optional}, if a value is present,
-     * otherwise an empty {@code Optional}
-     * @throws NullPointerException if the mapping function is null or returns
-     * a null result
+     * 这个方法和上面的方法相比不同之处在于：1.强制限制了Function的返回值为Optional类型  2.不会对返回值再次使用Optional进行封装 这两种方法可以分别在返回值不为Optional和返回值为optional时使用，此时他们最终的结果相同。
      */
     public<U> Optional<U> flatMap(Function<? super T, Optional<U>> mapper) {
         Objects.requireNonNull(mapper);
@@ -591,11 +543,7 @@ public final class Optional<T> {
     }
 
     /**
-     * Return the value if present, otherwise return {@code other}.
-     *
-     * @param other the value to be returned if there is no value present, may
-     * be null
-     * @return the value, if present, otherwise {@code other}
+     * 若
      */
     public T orElse(T other) {
         return value != null ? value : other;
