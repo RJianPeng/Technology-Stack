@@ -483,7 +483,7 @@ public final class Optional<T> {
     }
 
     /**
-     * 若Optional为空 跑出NoSuchElementException异常，否则返回value
+     * 若Optional为空 跑出NoSuchElementException异常，否则返回value。这个是最简单却最不安全的方法。
      */
     public T get() {
         if (value == null) {
@@ -543,41 +543,21 @@ public final class Optional<T> {
     }
 
     /**
-     * 若
+     * 若Optional不为空则返回value 否则返回参数other
      */
     public T orElse(T other) {
         return value != null ? value : other;
     }
 
     /**
-     * Return the value if present, otherwise invoke {@code other} and return
-     * the result of that invocation.
-     *
-     * @param other a {@code Supplier} whose result is returned if no value
-     * is present
-     * @return the value if present otherwise the result of {@code other.get()}
-     * @throws NullPointerException if value is not present and {@code other} is
-     * null
+     * 和上面的方法差不多，只不过other参数变成了表示一个新建对象的行为的函数式接口
      */
     public T orElseGet(Supplier<? extends T> other) {
         return value != null ? value : other.get();
     }
 
     /**
-     * Return the contained value, if present, otherwise throw an exception
-     * to be created by the provided supplier.
-     *
-     * @apiNote A method reference to the exception constructor with an empty
-     * argument list can be used as the supplier. For example,
-     * {@code IllegalStateException::new}
-     *
-     * @param <X> Type of the exception to be thrown
-     * @param exceptionSupplier The supplier which will return the exception to
-     * be thrown
-     * @return the present value
-     * @throws X if there is no value present
-     * @throws NullPointerException if no value is present and
-     * {@code exceptionSupplier} is null
+     * 若当前optional不为空则返回value，否则抛出一个异常，该异常来源于函数式接口supplier
      */
     public <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier) throws X {
         if (value != null) {
@@ -587,19 +567,6 @@ public final class Optional<T> {
         }
     }
 
-    /**
-     * Indicates whether some other object is "equal to" this Optional. The
-     * other object is considered equal if:
-     * <ul>
-     * <li>it is also an {@code Optional} and;
-     * <li>both instances have no value present or;
-     * <li>the present values are "equal to" each other via {@code equals()}.
-     * </ul>
-     *
-     * @param obj an object to be tested for equality
-     * @return {code true} if the other object is "equal to" this object
-     * otherwise {@code false}
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -614,28 +581,13 @@ public final class Optional<T> {
         return Objects.equals(value, other.value);
     }
 
-    /**
-     * Returns the hash code value of the present value, if any, or 0 (zero) if
-     * no value is present.
-     *
-     * @return hash code value of the present value or 0 if no value is present
-     */
+    
     @Override
     public int hashCode() {
         return Objects.hashCode(value);
     }
 
-    /**
-     * Returns a non-empty string representation of this Optional suitable for
-     * debugging. The exact presentation format is unspecified and may vary
-     * between implementations and versions.
-     *
-     * @implSpec If a value is present the result must include its string
-     * representation in the result. Empty and present Optionals must be
-     * unambiguously differentiable.
-     *
-     * @return the string representation of this instance
-     */
+    
     @Override
     public String toString() {
         return value != null
