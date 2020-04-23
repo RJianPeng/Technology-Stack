@@ -6,7 +6,8 @@
 * [第七章 并行数据处理与性能](#第七章并行数据处理与性能)
 * [第八章 重构、测试和调试](#第八章重构测试和调整)
 * [第九章 默认方法](#第九章默认方法)
-* [第十章 用Optional取代null](#第十章用Optional取代null)
+* [第十章 用Optional取代null](#第十章用optional取代null)
+* [第十一章 CompletableFuture:组合式异步编程](#第十一章completablefuture组合式异步编程)
 
 # 第一章、为什么要关心Java8
 ### 1.1.2 流处理
@@ -595,4 +596,17 @@ public final class Optional<T> {
             : "Optional.empty";
     }
 ```
+Optional提供了基础类型的OptionalInt、OptionalLong等类型，但是不推荐使用，因为基础类型等Optional不支持map、flatmap和filter方法。
+
+
+# 第十一章、CompletableFuture组合式异步编程
+## 11.1 Future接口
+要使用Future（返回值），通常只需要将耗时的操作封装在一个Callable（任务内容）中，再将它提交给ExecutorService（执行者）,就可以了。
+
+
+
+
+
+
+
 
