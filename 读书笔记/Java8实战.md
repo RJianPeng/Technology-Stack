@@ -601,9 +601,44 @@ Optional提供了基础类型的OptionalInt、OptionalLong等类型，但是不�
 
 # 第十一章、CompletableFuture组合式异步编程
 ## 11.1 Future接口
-要使用Future（返回值），通常只需要将耗时的操作封装在一个Callable（任务内容）中，再将它提交给ExecutorService（执行者）,就可以了。
+要使用Future（返回值），通常只需要将耗时的操作封装在一个Callable（任务内容）中，再将它提交给ExecutorService（线程池-执行者）,就可以了。
 
+源码解读：
+```
+/**
+* V为返回值的类类型
+*/
+public interface Future<V> {
 
+    /**
+     * 尝试取消任务的执行，如果当前任务已经执行完成或者已经被取消都会失败。如果这个方法返回为true，那么isDone和isCancelled方法都会返回true
+     */
+    boolean cancel(boolean mayInterruptIfRunning);
+
+    /**
+     * 该任务在完成之前被取消则返回true
+     */
+    boolean isCancelled();
+
+    /**
+     * 如果当前任务完成（包括因为某些原因被终止）则返回true
+     */
+    boolean isDone();
+
+    /**
+     * 获取异步执行的返回值 会抛出ExecutionException和InterruptedException，还可能抛出ExecutionException的子类
+     * C ancellationException。抛出CancellationException即任务被取消。抛出ExecutionException即任务运行时抛出异常。抛出    
+     * InterruptedException即等待结果的时候被超时中断。
+     */
+    V get() throws InterruptedException, ExecutionException;
+
+    /**
+     * 和上面的方法功能相似，只是加了哥超时时间和时间单位的参数。并且加了可能会抛出的TimeoutException，该异常表明等待超时
+     */
+    V get(long timeout, TimeUnit unit)
+        throws InterruptedException, ExecutionException, TimeoutExcepion，;
+}
+```
 
 
 
