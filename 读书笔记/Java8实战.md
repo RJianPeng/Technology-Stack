@@ -628,7 +628,7 @@ public interface Future<V> {
     /**
      * 获取异步执行的返回值 会抛出ExecutionException和InterruptedException，还可能抛出ExecutionException的子类
      * C ancellationException。抛出CancellationException即任务被取消。抛出ExecutionException即任务运行时抛出异常。抛出    
-     * InterruptedException即等待结果的时候被超时中断。
+     * InterruptedException即等待结果的时候被超时中断。调用时若操作未完成，会阻塞。
      */
     V get() throws InterruptedException, ExecutionException;
 
@@ -639,6 +639,60 @@ public interface Future<V> {
         throws InterruptedException, ExecutionException, TimeoutExcepion，;
 }
 ```
+
+### 11.1.2 使用CompletableFuture构建异步应用
+Java8中引入了CompletableFuture，使用了Lambda表达式以及流水线的思想。
+
+使用方式：
+```
+public Future<Double> getPriceAsync(String product){
+    CompletableFuture<Double> completableFuture = new CompletableFuture<>();
+    new Thread(()->{
+        double price = calculatePrice(product);
+        //结束CompletableFuture的运行并设置变量的值
+        completableFuture.complete(price);
+    }).start();
+    //这里直接返回 不需要等待创建的线程执行完毕
+    return completableFuture;
+}
+```
+### 11.2.2 错误处理
+如果价格计算（异步执行的任务）在过程中产生了错误，这种情况下，用于提示错误的异常会被限制在试图计算商品价格的当前线程的范围内，最终会杀死该线程，而这会导致等待get方法返回结果的客户端永久地被阻塞。推荐使用V get(long timeout, TimeUnit unit)方法，这个方法使用超时参数来避免发生这种情况。但这种方式开发人员没有机会发现计算商品价格的线程内出现了什么问题。为了让客户端能了解问题的原因，你需要使用CompletableFuture的completeExceptionally方法将导致其内发生问题的异常抛出。使用方式：
+```
+public Future<Double> getPriceAsync(String product){
+    CompletableFuture<Double> completableFuture = new CompletableFuture<>();
+    new Thread(()->{
+    try{
+        double price = calculatePrice(product);
+        //结束CompletableFuture的运行并设置变量的值
+        completableFuture.complete(price);
+    } catch(Exception ex){
+        //这种情况客户端会捕获一个ExecutionException异常
+        completableFuture.completeExceptionally(ex);
+    }
+    }).start();
+    //这里直接返回 不需要等待创建的线程执行完毕
+    return completableFuture;
+}
+```
+
+CompletableFuture提供了很多精巧的工厂方法，使用这些方法能更容易的完成创建CompletableFuture对象、获取返回值整个流程，还不用担心具体实现的细节。比如supplyAsync方法：
+```
+//这个方法和上面的方法等效
+public static Future<Double> getPriceTAsync(String product){
+    return CompletableFuture.supplyAsync(()-> calculatePrice(product));
+}
+```
+通过分析CompletableFuture.supplyAsync(Supplier<U> supplier)方法的源码我发现，这个方法底层是先看ForkJoinPool的线程池数量是否大于1，如果是大于1的，就使用ForkJoinPool的静态成员common即公用线程池来执行任务，否则就是用ThreadPerTaskExecutor线程池，这个线程池是来一个任务则新建一个线程去执行。supplyAsync的supplier是一个函数式接口，即要执行的任务。这个工厂方式和上一段代码功用相同，也提供了同样的错误管理机制。
+    
+CompletableFuture类中的join方法和Future接口中的get方法有相同的含义。
+
+
+
+
+
+
+
 
 
 
