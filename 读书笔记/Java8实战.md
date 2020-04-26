@@ -683,9 +683,23 @@ public static Future<Double> getPriceTAsync(String product){
     return CompletableFuture.supplyAsync(()-> calculatePrice(product));
 }
 ```
-通过分析CompletableFuture.supplyAsync(Supplier<U> supplier)方法的源码我发现，这个方法底层是先看ForkJoinPool的线程池数量是否大于1，如果是大于1的，就使用ForkJoinPool的静态成员common即公用线程池来执行任务，否则就是用ThreadPerTaskExecutor线程池，这个线程池是来一个任务则新建一个线程去执行。supplyAsync的supplier是一个函数式接口，即要执行的任务。这个工厂方式和上一段代码功用相同，也提供了同样的错误管理机制。
+通过分析CompletableFuture.supplyAsync(Supplier<U> supplier)方法的源码我发现，这个方法底层是先看ForkJoinPool的线程池数量是否大于1，如果是大于1的，就使用ForkJoinPool的静态成员common即通用线程池来执行任务，否则就是用ThreadPerTaskExecutor线程池，这个线程池是来一个任务则新建一个线程去执行。supplyAsync的supplier是一个函数式接口，即要执行的任务。这个工厂方式和上一段代码功用相同，也提供了同样的错误管理机制。
     
 CompletableFuture类中的join方法和Future接口中的get方法有相同的含义。
+
+### 11.3.3 寻找更好的方案
+CompletableFuture和并行流默认采用的是相同的通用线程池，默认都使用固定数目的线程。然而Completableuture具有一定的优势，因为它允许你对执行器（Executor，可以理解为线程池）进行配置，尤其是线程池的大小，让他以更适合应用需求的方式进行配置，这是并行流无法提供的。
+
+线程池大小调整：如果线程池中线程的数量过多，最终它们会竞争稀缺的处理器和内存资源，浪费大量的时间在上下文切换上。如果线程的数目过少，处理器的一些核可能就无法充分利用。《Java并发编程实战》中建议，线程池数量和处理器的利用率之比可以使用下面的共识进行估算
+* Nthreads = Ncpu * Ucpu * (1 +W/C)
+* Ncpu：处理器核的数目
+* Ucpu：期望的CPU利用率
+* W/C：等待时间和计算时间的比例
+
+#### 并行：使用并行流还是CompletableFuture？
+目前为止，我们知道对集合进行并行计算有两种方式：要么转换成并行流，要么利用CompletableFuture对其进行异步执行。后者提供了更多的灵活性，你可以调整线程池对大小，而这能帮助你确保整体的计算不会因为线程都在等待I/O而发生阻塞。《Java8实战》对两种方式的选用建议为：
+* 1.如果进行的是计算密集型操作，并且没有I/O，那么推荐使用Stream接口，实现简单，同时效率也可能是最高的。
+* 2.如果是涉及等待I/O的操作，那么CompletableFuture灵活性和性能更好。这种情况不使用并行流的另一个原因是，处理流的流水线中如果发生I/O等待，流的延迟特性会让我们很难判断到底是什么触发了等待。
 
 
 
