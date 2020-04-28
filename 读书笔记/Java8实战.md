@@ -701,6 +701,32 @@ CompletableFuture和并行流默认采用的是相同的通用线程池，默认
 * 1.如果进行的是计算密集型操作，并且没有I/O，那么推荐使用Stream接口，实现简单，同时效率也可能是最高的。
 * 2.如果是涉及等待I/O的操作，那么CompletableFuture灵活性和性能更好。这种情况不使用并行流的另一个原因是，处理流的流水线中如果发生I/O等待，流的延迟特性会让我们很难判断到底是什么触发了等待。
 
+### 11.4.2 使用Discount服务
+CompletableFuture.thenCompose方法：允许你对两个异步操作进行流水线，第一个操作完成时将其结果作为参数传递给第二个操作。thenCompose方法和CompletableFuture中的其他方法一样，也提供了一个以Async后缀结尾的版本thenComposeAsync。通常而言，名称中不带Async的方法和它的前一个任务一样，在同一个线程中运行，而以Async结尾的方法会将后续的任务提交到一个线程池，所以每个任务是有不同的线程处理的。
+
+### 11.4.4将两个CompletableFuture对象整合起来，无论他们是否存在依赖
+某些时候你需要将两个完全不想干的CompletableFuture对象的结果整合起来，而且你也不希望等到第一个任务完全结束才开始第二项任务。这种情况可以使用CompletableFuture.thenCombine方法。
+```
+public <U,V> CompletableFuture<V> thenCombine(
+    CompletionStage<? extends U> other,
+    BiFunction<? super T,? super U,? extends V> fn) {
+    return biApplyStage(null, other, fn);
+}
+```
+
+## 11.5响应CompletableFuture的completion事件
+Completablefuture.thenAccept:接收CompletableFuture执行完毕后的返回值做参数。
+
+CompletableFuture.anyOf()：该方法接受一个ConpletableFuture的数组，返回第一个执行完毕的CompletableFuture。
+
+
+
+
+
+
+
+
+
 
 
 
