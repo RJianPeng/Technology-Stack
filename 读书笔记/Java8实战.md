@@ -8,6 +8,7 @@
 * [第九章 默认方法](#第九章默认方法)
 * [第十章 用Optional取代null](#第十章用optional取代null)
 * [第十一章 CompletableFuture:组合式异步编程](#第十一章completablefuture组合式异步编程)
+* [第十二章 新的日期和时间API](#第十二章新的日期和时间api)
 
 # 第一章、为什么要关心Java8
 ### 1.1.2 流处理
@@ -721,9 +722,43 @@ CompletableFuture.anyOf()：该方法接受一个ConpletableFuture的数组，�
 
 
 
+# 第十二章、新的日期和时间API
+### 12.1.1 使用LocalDate和LocalTime
+#### LocalDate
+该类的实例是一个不可变对象，他只提供了简单的日期，另外，它也不附带任何与时区相关的信息。
+```
+LocalDate localDate = LocalDate.of(2020,4,20);
+LocalDate now = LocalDate.now();
+//通过解析字符串来实例化对象 如果解析失败 会抛出DateTimeParseException的异常
+LocalDate date = LocalDate.parse("2020-04-20");
+int year = localDate.getYear();
+Month month = localDate.getMonth();
+int day = localDate.getDayOfMonth();
+DayOfWeek dayOfWeek = localDate.getDayOfWeek();
+int len = localDate.lengthOfMonth();
+//是否为闰年
+boolean leap = localDate.isLeapYear();
+```
 
+#### LocalTime
+```
+LocalTime localTime = LocalTime.of(13,45,20);
+//通过解析字符串来实例化对象 如果解析失败 会抛出DateTimeParseException的异常
+LocalTime time = LocalTime.parse("13:25:20");
+int hour = localTime.getHour();
+int minute = localTime.getMinute();
+int second = localTime.getSecond();
+```
 
-
+#### LocalDateTime
+LocalDateTime是LocalDate和LocalTime的合体，所以这个对象的实例化可以从这两种对象出发：
+```
+LocalDateTime dt1 = LocalDateTime.of(2020,4,20,13,45,20);
+LocalDateTime dt2 = LocalDateTime.of(localDate,localTime);
+LocalDateTime dt3 = localDate.atTime(13,45,20);
+LocalDateTime dt4 = localDate.atTime(localTime);
+LocalDateTime dt5 = localTime.atDate(localDate);
+```
 
 
 
