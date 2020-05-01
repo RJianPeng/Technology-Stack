@@ -8,7 +8,7 @@
    
 ## 缓存
    - [caffeine]
-   - [redis]
+   - [redis](./缓存/redis.md)
 
 ## 计算机网络
 
