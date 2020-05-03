@@ -61,7 +61,7 @@ public class ThreadDemo {
 * java8中，以上三种方式都可以通过函数式编程来简洁的实现
 
 ## 线程的状态
-线程状态如图<div align="center"> <img src="https://github.com/RJianPeng/Technology-Stack/blob/master/Java/photo/%E7%BA%BF%E7%A8%8B%E7%8A%B6%E6%80%81.png" width="400px"> </div><br>
+线程状态如图<div align="center"> <img src="https://github.com/RJianPeng/Technology-Stack/blob/master/Java/photo/%E7%BA%BF%E7%A8%8B%E7%8A%B6%E6%80%81.png" width="700px"> </div><br>
 
 （ 图片转自https://github.com/CyC2018/CS-Notes )
 
@@ -112,6 +112,17 @@ public ThreadPoolExecutor(int corePoolSize,
 2.线程池内的数量大于等于核心线程数时，新的任务提交过来，会先放到阻塞队列里，等待空闲的核心线程来执行。
 3.阻塞队列满的时候且线程池内的线程数量小于最大线程数时，会创建新的线程到线程池中。
 4.当阻塞队列满当时候且线程池的线程数量等于最大线程数时，新的任务过来，线程池会根据定义的拒绝策略处理新来的任务。
+
+### 线程池执行任务
+线程池对任务的执行：
+* execute()：无返回值
+* submit()：有返回值 FutureTask
+
+
+
+
+
+
 
 
 
