@@ -1,8 +1,8 @@
-* [线程的使用](#线程的使用)
+* [Java线程](#java线程)
 * [线程间的通信方式](#线程间的通信方式)
 * [Java线程池](#java线程池)
 
-# 线程的使用
+# Java线程
 线程的使用：
 * 1.继承Thread类，实现run方法，Thread实现了Runnable接口，通过start方法启动
 ```
@@ -60,10 +60,14 @@ public class ThreadDemo {
 实现接口的方式更好一点，因为类只能继承一个类，但是可以实现多个接口，同时如果是继承Thread的话开销较大。
 * java8中，以上三种方式都可以通过函数式编程来简洁的实现
 
+## 线程的状态
+线程状态如图<div align="center"> <img src="https://github.com/RJianPeng/Technology-Stack/blob/master/Java/photo/%E7%BA%BF%E7%A8%8B%E7%8A%B6%E6%80%81.png" width="400px"> </div><br>
+
+（ 图片转自https://github.com/CyC2018/CS-Notes )
 
 
 
-
+# 线程间的通信方式
 
 
 
