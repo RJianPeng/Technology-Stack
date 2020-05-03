@@ -6,6 +6,7 @@
    - [Java虚拟机](./Java/Java虚拟机.md)
    - [Java并发](./Java/Java并发.md)
    
+   
 ## 缓存
    - [caffeine]
    - [redis](./缓存/redis.md)
@@ -17,7 +18,7 @@
    - [Mysql基础](./数据库/Mysql基础.md)
 
 ## 面向对象
-
+   - [设计模式](./面向对象/设计模式.md)
 
 ## 工具
 
