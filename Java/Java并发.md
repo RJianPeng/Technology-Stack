@@ -55,7 +55,7 @@ public class ThreadDemo {
     }
 }
 ```
-2，3两种方式最后还是需要通过Thread来进行启动，且第三种方式是需要返回值的，而且是异步执行的，先返回FutureTask对象，任务执行完毕后再将值写入该对象。（关于这部分异步执行的可以看https://github.com/RJianPeng/Technology-Stack/blob/master/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/Java8%E5%AE%9E%E6%88%98.md#%E7%AC%AC%E5%8D%81%E4%B8%80%E7%AB%A0completablefuture%E7%BB%84%E5%90%88%E5%BC%8F%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B）
+2，3两种方式最后还是需要通过Thread来进行启动，且第三种方式是需要返回值的，而且是异步执行的，先返回FutureTask对象，任务执行完毕后再将值写入该对象。（关于这部分异步执行的可以看https://github.com/RJianPeng/Technology-Stack/blob/master/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/Java8%E5%AE%9E%E6%88%98.md#%E7%AC%AC%E5%8D%81%E4%B8%80%E7%AB%A0completablefuture%E7%BB%84%E5%90%88%E5%BC%8F%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B ）
 
 实现接口的方式更好一点，因为类只能继承一个类，但是可以实现多个接口，同时如果是继承Thread的话开销较大。
 * java8中，以上三种方式都可以通过函数式编程来简洁的实现
