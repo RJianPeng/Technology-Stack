@@ -1,4 +1,5 @@
-* [Collection](#Collection)
+* [Collection](#collection)
+* [Map](#map)
 
 # Collection
 
@@ -38,9 +39,25 @@ LinkedHashSet：具有HashSet的查找效率，同时使用双向链表维护插
 TreeMap：基于红黑树实现
 
 ### HashMap
-HashMap：基于哈希表实现，使用的是拉链发解决冲突，插入键值对的时候采用头插法，默认容量是16（必须是2的n次方） 与HashTable的比较：1.HashTable使用synchronized进行同步 2.HashMap可以输入key为null的键值对,但是无法调用key为null的hashCode()方法，所以特殊指定0个桶来存放  3.HashMap的迭代器是Fail-Fast迭代器，hashtable是enumerator迭代器
-4.HashMap不能保证Map中元素的顺序不变。
-为啥默认容量必须是2的n次方：为了散列更均匀
+HashMap：基于哈希表实现，使用的是拉链发解决冲突，插入键值对的时候采用头插法，默认容量是16（必须是2的n次方） 
+
+与HashTable的比较：
+* 1.HashTable使用synchronized进行同步 
+* 2.HashMap可以输入key为null的键值对,但是无法调用key为null的hashCode()方法，所以特殊指定0个桶来存放  
+* 3.HashMap的迭代器是Fail-Fast迭代器，hashtable是enumerator迭代器
+* 4.HashMap不能保证Map中元素的顺序不变。
+
+#### 为啥默认容量必须是2的n次方
+为了散列更均匀.在HashMap的源码中，对key的哈希值的计算是通过先计算其哈希值，然后再与数组长度取模得出的。在源码中，取模的操作如下：
+```
+static int indexFor(int h, int length) {  
+       return h & (length-1);  
+} 
+```
+这里是通过将哈希值与数组长度-1的值做一次&（与）操作，得出来的即为在数组中的位数。
+设想如果数组长度为15，15-1的二进制为1110，这样就会导致与的结果里不可能出现末尾为1的结果，导致哈希的碰撞几率大大提高。
+如果数组长度为16，16-1的二进制为1111，与的结果相对于上面的会更加均匀的分布在数组上。
+
 
 ### HashTable
 HashTable：和 HashMap 类似，但它是线程安全的，这意味着同一时刻多个线程可以同时写入 HashTable 并且不会导致数据不一致。但是它是遗留类，不应该去使用它。现在可以使用 ConcurrentHashMap 来支持线程安全，并且 ConcurrentHashMap 的效率会更高，因为 ConcurrentHashMap 引入了分段锁（jdk1.7）。
@@ -61,3 +78,35 @@ LinkedHashMap：使用双向链表来维护插入顺序的HashMap，有一个最
 
 # 迭代器
 迭代器模式：就是提供一种方法对一个容器对象中的各个元素进行访问，而又不暴露该对象容器的内部细节。
+
+因为容器内部的结构不同，很多时候不知道如何去遍历一个容器内的元素，所以为了使对容器内元素操作简单，Java引入了迭代器模式。
+
+在Java中迭代器为一个接口，提供了迭代器基本的定义：
+```
+public interface Iterator<E> {
+    //判断是否存在下一个元素
+    boolean hasNext();
+
+    //返回下一个元素
+    E next();
+
+    //移除当前元素
+    default void remove() {
+        throw new UnsupportedOperationException("remove");
+    }
+
+    //对容器中的每一个元素执行action的操作
+    default void forEachRemaining(Consumer<? super E> action) {
+        Objects.requireNonNull(action);
+        while (hasNext())
+            action.accept(next());
+    }
+}
+```
+
+
+
+
+
+
+
