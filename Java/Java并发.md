@@ -1,6 +1,8 @@
 * [Java线程](#java线程)
 * [线程间的通信方式](#线程间的通信方式)
 * [Java线程池](#java线程池)
+* [线程安全工具类](#线程安全工具类)
+* [乐观锁和悲观锁](#乐观锁和悲观锁)
 
 # Java线程
 线程的使用：
@@ -147,6 +149,60 @@ public ThreadPoolExecutor(int corePoolSize,
 线程池对任务的执行：
 * execute()：无返回值
 * submit()：有返回值 FutureTask
+
+
+# 线程安全工具类
+
+## ConcurrentHashMap
+与HashMap类似，但是采用了分段锁，每一段锁控制几个桶，一个ConcurrentHashMap的多个段可以被多个线程同时访问,分段锁（Segment）继承于ReentrantLock
+java8里面改用volatile和CAS实现线程安全
+
+## CopyOnWriteArrayList
+读写分离的数组，写操作通过ReentranLock加锁,写操作是复制一个新的数组进行写操作，结束之后将旧的数组指向新的数组，在写操作的时候允许读操作
+
+## BlockingQueue
+该接口有以下实现 1.FIFO队列 LinkedBlockingQueue    ArrayBlockingQueue(长度固定)  2.优先级队列 PriorityBlockingQueue
+提供了put()和take()方法，如果队列为空take()会阻塞，如果队列满了put()会阻塞
+用来实现生产者和消费者问题，是线程池中参数之一
+
+## AtomicInteger
+能保证这个类型的数据在增减的时候保持原子性，通过CAS实现
+
+## CountDownLatch
+用来控制一个线程等待多个线程，维护了一个计数器，每次调用countDown（）方法会让计数器的值减1，计数器为0的时候，那些调用了await（）而等待的线程开始继续
+
+## CyclicBarrier
+用来控制多个线程互相等待，只有在多个线程都到达时才会继续进行，与CountDownLatch相似，await()执行之后计数器才会减1，并进行等待，等计数器为0的时候，这些调用了await的线程才会继续。与CountDownLatch不同的是可以使用reset（）方法循环使用计数器或者await屏障通过之后重置
+
+## FutureTask
+实现了RunnableFuture接口，这个接口继承于Runnable和Future接口。可用于异步获取执行结果或取消执行任务的场景。通过传入Runnable或Callable的任务给FutureTask，可以直接调用其run方法或放入线程池，之后可以通过FutureTask的get方法获取返回值。
+另外，FutureTask还可以确保即使调用了多次run方法，它都只会执行一次Runnable或者Callable任务，或者通过cancel取消FutureTask的执行等。
+
+## Semphore
+类似于信号量，控制对互斥资源的访问线程数  acquire()获取  release()释放。信号量为0的时候acquire阻塞。
+
+## Condition
+实现线程之间的协调，通过await（）使线程等待，通过signal和signalAll()进行唤醒，相对于wait方法，await可以指定等待的条件，更加灵活。await方法还可以将与其Condition绑定的Reetranlock的锁释放掉，为唤醒的时候重新获得。condition的获得必须通过reetrantlock
+
+
+# 乐观锁和悲观锁
+乐观锁就是很乐观，每次拿数据的时候都认为别人不会修改，所以不会上锁，但在更新的时候会检查下数据在中途是否有被修改过。适用于读多的情况，能提高吞吐量
+
+悲观锁就是很悲观，在拿数据的时候认为别人一定会修改，所以一定会上锁，直到操作结束。
+悲观锁的缺点：多线程情况下，加锁解锁会造成很大的开销，造成性能问题。
+
+## CAS
+是乐观锁这种思想的一种实现。当多个线程尝试修改一个共享变量的时候，只有一个线程会修改成功，其他线程会被告知失败。
+CAS技术中，需要三个操作数，需要读写的内存位置（V），预期原值（A），新值（B），如果V中的值与A相匹配则认为没有线程修改过这个值，则将V中的该位置更新为B
+AtomicInteger就是CAS
+
+
+CAS缺点：
+* 1.ABA问题
+比如一个线程从V中取出了A，另一个线程也从V中取出了A。第一个线程把A变成了B然后又变成了A，这是第二个线程仍然能正常的操作
+* 2.循环时间开销大
+自旋CAS（不成功就一直尝试）如果长时间不成功会造成很大开销
+* 3.只能保证一个共享变量的原子性操作
 
 
 
