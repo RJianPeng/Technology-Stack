@@ -184,6 +184,18 @@ java8里面改用volatile和CAS实现线程安全
 ## Condition
 实现线程之间的协调，通过await（）使线程等待，通过signal和signalAll()进行唤醒，相对于wait方法，await可以指定等待的条件，更加灵活。await方法还可以将与其Condition绑定的Reetranlock的锁释放掉，为唤醒的时候重新获得。condition的获得必须通过reetrantlock
 
+Condition的使用方式：
+```
+ReentrantLock reentrantLock = new ReentrantLock();
+//通过reentrantLock获取condition
+Condition condition = reentrantLock.newCondition();
+//等待condition
+condition.await();
+//随机唤醒一个等待condition的线程
+condition.signal();
+//唤醒所有等待condition的线程
+condition.signalAll();
+```
 
 # 乐观锁和悲观锁
 乐观锁就是很乐观，每次拿数据的时候都认为别人不会修改，所以不会上锁，但在更新的时候会检查下数据在中途是否有被修改过。适用于读多的情况，能提高吞吐量
