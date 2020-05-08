@@ -67,6 +67,10 @@ public class ThreadDemo {
 
 * 2.run（）方法当作普通方法的方式调用。程序还是要顺序执行，要等待run方法体执行完毕后，才可继续执行下面的代码； 程序中只有主线程——这一个线程， 其程序执行路径还是只有一条，这样就是直接在当前线程中执行任务而没有达到多线程的目的。
 
+## Thread常见方法
+Thread.join()方法：
+A线程在B线程里面调用了A的join方法，则必须等到A线程执行完毕B线程才会继续执行。
+
 ## 线程的状态
 线程状态如图<div align="center"> <img src="https://github.com/RJianPeng/Technology-Stack/blob/master/Java/photo/%E7%BA%BF%E7%A8%8B%E7%8A%B6%E6%80%81.png" width="700px"> </div><br>
 
@@ -85,7 +89,7 @@ public class ThreadDemo {
 ### synchronized
 原理：每个对象头都有个监视器锁（monitor），当monitor被占用时会处于锁定状态，线程执行到synchronized的时候会尝试获取monitor的权限。线程进来的时候会先进行尝试性抢占然后再到等待队列中，所以是非公平的。锁一共有四种状态：无锁状态  偏向锁  轻量级锁  重量级锁。锁只能升级不能降级。
 
-synchronized底层对对象锁对使用：
+synchronized底层对对象锁的使用：
 * 1，当没有被当成锁时，这就是一个普通的对象，Mark Word记录对象的HashCode，锁标志位是01，是否偏向锁那一位是0。
 
 * 2，当对象被当做同步锁并有一个线程A抢到了锁时，锁标志位还是01，但是否偏向锁那一位改成1，前23bit记录抢到锁的线程id，表示进入偏向锁状态。
@@ -100,7 +104,15 @@ synchronized底层对对象锁对使用：
 
 * 7，自旋锁重试之后如果抢锁依然失败，同步锁会升级至重量级锁，锁标志位改为10。在这个状态下，未抢到锁的线程都会被阻塞。
 
+## volatile和synchronized的区别
 
+1.volatile是线程同步的轻量级实现，所以volatile的性能要比synchronize好；volatile只能用于修饰变量，synchronize可以用于修饰方法、代码块。随着jdk技术的发展，synchronize在执行效率上会得到较大提升，所以synchronize在项目过程中还是较为常见的；
+ 
+2.多线程访问volatile不会发生阻塞，所以没有原子性；而synchronize会发生阻塞；
+
+3.volatile能保证变量在私有内存和主内存间的同步(可见性在一定程度上保证有序性)，但不能保证变量的原子性；(lock)synchronize可以保证变量原子性；
+
+4.volatile保证变量在多线程之间的可见性；synchronize是多线程之间访问资源的同步性；所有同步操作都要保证其 原子性与可见性,有序性;
 
 
 
@@ -149,6 +161,7 @@ public ThreadPoolExecutor(int corePoolSize,
 线程池对任务的执行：
 * execute()：无返回值
 * submit()：有返回值 FutureTask
+
 
 
 # 线程安全工具类
