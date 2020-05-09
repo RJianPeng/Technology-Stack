@@ -11,16 +11,16 @@
 
 * [三、Java关键字](#三java关键字)
 * [private、public、default和protected](#privatepublicdefault和protected)
-* [volatile和synchronized](#volatile和synchronized)
 
 * [四、接口和抽象类](#四接口和抽象类)
 * [接口](#接口)
 * [抽象类](#抽象类)
 * [多态](#多态)
 
-* [基本类型和封装类型](#基本类型和封装类型)
-
 * [五、代码编写小细节](#五代码编写小细节)
+
+
+* [六、基本类型和封装类型](#六基本类型和封装类型)
 
 # 一、字符串
 ## String
@@ -209,19 +209,6 @@ final关键字用法：
 * 重载：在一个类里面，函数名相同但是参数类型不同。
 * 重写：在继承关系中，子类对父类中的方法进行重新定义。此时的多态表现形式需要父子继承关系，向上转型。向上转换即将父类的引用类型指向子类的实例，比如 A a, B b,A为B的父类，A a=new B ();此时就是实例化了一个类为B的对象，向上转型为它的父类对象。此时，a既可以调用父类中的功能，也可以调用子类中的功能，但是必须是在父类中声明过的功能。即父类引用可以指向子类实例。
 
-# 基本类型和封装类型
-Java中存在8中基本类型
-int      4字节 Integer
-long     8字节 Long
-short    2字节 Short
-double   8字节 Double
-float    4字节 Float
-char     2字节 Character
-byte     1字节 Byte
-boolean  1字节 Boolean
-基本类型都存在其对应的封装类型，基本类型和封装类型之间的类型转换称为封箱/拆箱。转换过程都是隐式的。
-* 基本类型的参数传递是值传递，封装类型的参数传递是引用传递。
-
 
 # 五、代码编写小细节
 
@@ -240,5 +227,25 @@ String str = "hello";
 str.substring(0,2);//这个的返回值为he，返回的是第一个参数开始到第二个参数前一个子字符串
 ```
 
+## 六、基本类型和封装类型
+Java中存在8中基本类型：
 
+int      4字节 Integer
+
+long     8字节 Long
+
+short    2字节 Short
+
+double   8字节 Double
+
+float    4字节 Float
+
+char     2字节 Character
+
+byte     1字节 Byte
+
+boolean  1字节 Boolean
+
+基本类型都存在其对应的封装类型，基本类型和封装类型之间的类型转换称为封箱/拆箱。转换过程都是隐式的。
+* 基本类型的参数传递是值传递，封装类型的参数传递是引用传递。
 
