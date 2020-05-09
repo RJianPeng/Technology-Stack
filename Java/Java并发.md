@@ -71,6 +71,9 @@ public class ThreadDemo {
 Thread.join()方法：
 A线程在B线程里面调用了A的join方法，则必须等到A线程执行完毕B线程才会继续执行。
 
+Thread.yield()方法：
+译为线程让步。顾名思义，就是说当一个线程使用了这个方法之后，它就会把自己CPU执行的时间让掉 但是是让给优先级大于等于这个线程的线程。
+
 ## 线程的状态
 线程状态如图<div align="center"> <img src="https://github.com/RJianPeng/Technology-Stack/blob/master/Java/photo/%E7%BA%BF%E7%A8%8B%E7%8A%B6%E6%80%81.png" width="700px"> </div><br>
 
