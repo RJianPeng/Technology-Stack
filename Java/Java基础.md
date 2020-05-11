@@ -27,6 +27,12 @@
 * [非检查异常](非检查异常)
 
 * [八、Java内部类](#java内部类)
+* [成员内部类](#成员内部类)
+* [局部内部类](#局部内部类)
+* [匿名内部类](#匿名内部类)
+* [静态内部类](#静态内部类)
+
+* [九、范型](#九范型)
 
 
 # 一、字符串
@@ -285,14 +291,59 @@ Error 和 RuntimeException 以及他们的子类。javac在编译时，不会提
 最普通的内部类，定义在一个类的内部，可以有访问控制来修饰。内部类可以无条件的调用外部类的方法，成员变量等。如果在外部类中有和内部类重名的方法或成员变量，则默认情况下是访问的自己的方法和成员变量。可以通过
 外部类.this.成员变量
 外部类.this.成员方法
-这种方式来进行显示的调用。
-   
+这种方式来对外部类对成员变量和方法进行显示的调用。
 
+对内部类的实例化需要依靠外部类：
+```
+Outer outer = new Outer();
+Outer.Inner inner = outer.new Inner();
+```
 
+## 局部内部类
+定义在方法或者代码段中的类，局部内部类的访问仅限于方法内或者该作用域内。不能由访问权限修饰符.
+```
+public class Inner{
+    AtomicInteger atomicIntegerInner;
+    public void test(){
+        class T{
+            int a = 0;
+        }
+        T t = new T();
+    }
+}
+```
 
+## 匿名内部类
+定义并实例化一个临时的类
+```
+Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("匿名内部类");
+            }
+        });
+```
 
+## 静态内部类
+不能使用外部类的非static方法和变量
 
+不依赖与外部类就可以实例化：
+```
+Outer.Inner inner = new Outer.Inner();
+```
 
+# 九、范型
+java的泛型在编译期有效，在运行期会被删除
+
+注意这个地方因为类型擦除可能会出现方法里面集合类型不同，但是报错方法重复
+即：
+List<String>、List<T>类型擦除之后为List。
+
+List<String>[]、List<T>类型擦除之后为List。
+* 这就是类型擦除
+
+注意：
+* 1.范型
 
 
 
