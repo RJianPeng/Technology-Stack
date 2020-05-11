@@ -34,6 +34,8 @@
 
 * [九、范型](#九范型)
 
+* [十、枚举类型](十枚举类型)
+
 
 # 一、字符串
 ## String
@@ -196,6 +198,8 @@ final关键字用法：
 ### throws
 声明这部分的代码可能出现哪些异常，并将这些异常交给上一层处理
 
+### instanceof
+
 # 四、接口和抽象类
 ## 抽象类：
 * 1.抽象类是用abstract class声明的特殊的类
@@ -343,8 +347,49 @@ List<String>[]、List<T>类型擦除之后为List。
 * 这就是类型擦除
 
 注意：
-* 1.范型
+* 1.范型的class是相同的
+```
+ArrayList<String> stringArrayList = new ArrayList<>();
+ArrayList<Outer> outerArrayList = new ArrayList<>();
+System.out.println(stringArrayList.getClass() == outerArrayList.getClass());
+```
+输出为true
 
+* 2.范型数组初始化时不能声明范型类型
+```
+List<String>[] lists = new List<String>[9]; //错误的初始化方式
+List<String>[] lists = new List[9]; //正确的初始化方式
+```
+
+# 十、枚举类型
+枚举类默认继承java.lang.Enum,而Enum实现了comparable和serilizable，所以有compareTo方法，除此之外还有name（），enum实例的声明时的名字；ordinal（）返回实例声明的次序。values（）返回实例的数组，除了values方法之外，还可以用class中的getEnumConstants方法。
+
+对枚举类中加方法：
+注意要在实例的最后加个分号，而且实例放在最前面声明。
+其他地方和正常的类相同。
+
+values（）是由编译器添加的static方法。而且编译器还把enum声明的类用final来修饰，所以枚举类不能被继承。如果想要实现枚举嵌套枚举可以通过实现接口来实现或者借由class的getEnumConstants方法来实现。
+
+除了以上那些用处之外，getEnumConstants也用于Enum的random方法中：通过把枚举类的class作为参数传入而返回一个随机的实例。
+
+enum还允许程序员通过定义抽象方法，为不同的实例定义不同的行为。
+```
+public enum EnumDemo {
+    Test(1){
+        @Override
+        void test() {
+            System.out.println("抽象方法实例");
+        }
+    };
+    int a;
+
+    EnumDemo(int a){
+        this.a = a;
+    }
+
+    abstract void test();
+}
+```
 
 
 
