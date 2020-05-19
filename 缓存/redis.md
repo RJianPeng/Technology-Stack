@@ -2,7 +2,9 @@
 * [Redis的特性](#redis的特性)
 * [Redis的性能](#redis的性能)
 * [Redis哨兵](#redis哨兵)
-* [Redis底层数据结构](#Redis底层数据结构)
+* [Redis底层数据结构](#redis底层数据结构)
+* [Redis分布式锁](#redis分布式锁)
+* [Redis常见问题](#redis常见问题)
 
 
 
@@ -226,6 +228,53 @@ rehash的时候使用字典结构
 
 跳跃表在 Redis 中，只有两个地方用到：一个是实现有序集合对象，另一个是在集群节点中用作内部数据结构。
 <div align="center"> <img src="https://github.com/RJianPeng/Technology-Stack/blob/master/%E7%BC%93%E5%AD%98/photo/%E8%B7%B3%E8%B7%83%E8%A1%A8.png"/></div><br>
+
+
+# Redis分布式锁
+Redis分布式锁特性：
+* 高性能(加、解锁时高性能)
+* 可以使用阻塞锁与非阻塞锁。
+* 不能出现死锁。
+* 可用性(不能出现节点 down 掉后加锁失败)。
+
+使用方式：
+先拿setnx来争抢锁，抢到之后，再用expire给锁加一个过期时间防止锁忘记了释放。但是为了避免setnx抢占成功后因为某些原因不能执行expire导致死锁，我们可以利用 Redis set key 时的一个 NX 参数可以保证在这个 key 不存在的情况下写入成功。并且再加上 EX 参数可以让该 key 在超时之后自动删除。保证只有一个进程能得到锁且不会死锁（过期删除&原子操作）
+
+加锁：
+```
+//这个地方是通过redis的set将setnx和expire合并成一个原子性的操作
+String result = this.jedis.set(LOCK_PREFIX + key, LOCK_MSG, "NX", "PX", 10 * TIME);
+if (LOCK_MSG.equals(result)){
+  return true ;
+}else {
+  return false ;
+}
+```
+
+加阻塞锁：
+```
+for (;;){
+  String result = this.jedis.set(LOCK_PREFIX + key, LOCK_MSG, "NX", "PX", 10 * TIME);
+  if (LOCK_MSG.equals(result)){
+      break ;
+  }
+
+  //防止一直消耗 CPU 	
+  Thread.sleep(DEFAULT_SLEEP_TIME) ;
+}
+```
+
+解锁：不能直接删除key，需要先判定这个锁是否是自己的才能删除。
+
+
+# Redis 常见问题
+
+
+
+
+
+
+
 
 
 
