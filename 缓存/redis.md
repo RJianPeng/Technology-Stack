@@ -1,6 +1,8 @@
 * [NoSQL](#nosql)
 * [Redis的特性](#redis的特性)
-* [Redis的性能](redis的性能)
+* [Redis的性能](#redis的性能)
+* [Redis哨兵](#redis哨兵)
+* [Redis底层数据结构](#Redis底层数据结构)
 
 
 
@@ -87,16 +89,15 @@ RDB流程：这里只讲bgsave，因为这个是RDB主流的持久化方式
 ### AOF方式
 日志的形式记录服务器的操作，在启动之初会读取日志，并初始化数据
 
-优势：1.这种机制有更高的数据安全性
-
-     2.采用append模式写日志  写入的时候出现宕机不会破坏已经写入的数据  写了一半崩溃，下次启动redis的时候通过redis-check-aof工具解决数据一致性的问题
-     3.日志过大，redis自动启动重写机制。redis还会创建一个新的日志，记录重写期间的数据操作，保证重写期间的数据操作不会丢失。
+优势：
+     * 1.这种机制有更高的数据安全性
+     * 2.采用append模式写日志  写入的时候出现宕机不会破坏已经写入的数据  写了一半崩溃，下次启动redis的时候通过redis-check-aof工具解决数据一致性的问题
+     * 3.日志过大，redis自动启动重写机制。redis还会创建一个新的日志，记录重写期间的数据操作，保证重写期间的数据操作不会丢失。
+     * 4.日志文件清晰，可以通过这个文件实现数据的重建
      
-     4.日志文件清晰，可以通过这个文件实现数据的重建
-     
-缺点：1.AOF文件更大
-          
-     2.根据同步策略的原因，AOF效率低于RDB
+缺点：
+     * 1.AOF文件更大
+     * 2.根据同步策略的原因，AOF效率低于RDB
 
 redis提供了三种同步策略：
 * 每秒同步：异步完成，效率很高，一旦系统宕机，这一秒钟内修改的数据丢失
@@ -145,7 +146,7 @@ slaveof host port 让该服务器成为host服务器的从服务器
 
 ## Redis单线程
 redis单线程的意思是说，在处理网络请求模块，redis只使用了一个线程来进行处理，但是在其他的模块，redis还会使用更多的线程来进行处理。redis通过任务封闭，把多个任务封装到了一个线程上进行处理，对于需要多个操作的任务来说，可能会存在多个任务的操作交叉进行。
-这样节省了线程切换的开销，速度更快
+这样节省了线程切换的开销，速度更快。
 
 采用I/O多路复用，epoll
 
@@ -174,8 +175,57 @@ redis的高性能主要依赖于：
 * 4.使用I/O多路复用
 
 
+# Redis哨兵
+哨兵模式-redis集群方案之一，它的功能：
+* 1.监控redis实例
+* 2.传递信息
+* 3.自动故障迁移（主服务出问题的时候，切换一个从服务为主服务）
+
+### 原理就是哨兵通过发送命令，等待服务响应，从而监控redis实例
+
+哨兵模式的工作方式：
+1】、每个Sentinel（哨兵）进程以一定的频率向整个集群中的Master主服务器，Slave从服务器以及其他Sentinel（哨兵）进程发送一个 PING 命令。
+
+2】、如果一个实例（instance）距离最后一次有效回复 PING 命令的时间超过 down-after-milliseconds 选项所指定的值， 则这个实例会被 Sentinel（哨兵）进程标记为主观下线（SDOWN）。
+
+3】、如果一个Master主服务器被标记为主观下线（SDOWN），则正在监视这个Master主服务器的所有 Sentinel（哨兵）进程要以每秒一次的频率确认Master主服务器的确进入了主观下线状态。
+
+4】、当有足够数量的 Sentinel（哨兵）进程（大于等于配置文件指定的值）在指定的时间范围内确认Master主服务器进入了主观下线状态（SDOWN）， 则Master主服务器会被标记为客观下线（ODOWN）。
+
+5】、在一般情况下， 每个 Sentinel（哨兵）进程会以每 10 秒一次的频率向集群中的所有Master主服务器、Slave从服务器发送 INFO 命令。
+
+6】、当Master主服务器被 Sentinel（哨兵）进程标记为客观下线（ODOWN）时，Sentinel（哨兵）进程向下线的 Master主服务器的所有 Slave从服务器发送 INFO 命令的频率会从 10 秒一次改为每秒一次。
+
+7】、若没有足够数量的 Sentinel（哨兵）进程同意 Master主服务器下线， Master主服务器的客观下线状态就会被移除。若 Master主服务器重新向 Sentinel（哨兵）进程发送 PING 命令返回有效回复，Master主服务器的主观下线状态就会被移除。
 
 
+心跳检测的作用：
+* 1.检测主服务器的网络连接状态
+* 2.辅助实现min-slaves选项
+* 3.检测命令丢失（主服务器给从服务器的写命令，根据偏移量来判定）
+
+
+# Redis底层数据结构
+SDS：简单动态字符串
+<div align="center"> <img src="https://github.com/RJianPeng/Technology-Stack/blob/master/%E7%BC%93%E5%AD%98/photo/SDS.png"/></div><br>
+
+预分配空间：len<1MB，预先分配len的空间，len>1MB，预先分配1MB的空间
+不需要用二进制字符标识字符的结束
+
+链表：
+列表的底层实现之一
+双向链表，头结点的前置和尾结点的后置都是null
+
+字典：
+用来保存键值对的抽象数据类型
+redis底层数据库的实现
+rehash的时候使用字典结构
+<div align="center"> <img src="https://github.com/RJianPeng/Technology-Stack/blob/master/%E7%BC%93%E5%AD%98/photo/%E5%AD%97%E5%85%B8.png"/></div><br>
+
+跳跃表：
+
+跳跃表在 Redis 中，只有两个地方用到：一个是实现有序集合对象，另一个是在集群节点中用作内部数据结构。
+<div align="center"> <img src="https://github.com/RJianPeng/Technology-Stack/blob/master/%E7%BC%93%E5%AD%98/photo/%E8%B7%B3%E8%B7%83%E8%A1%A8.png"/></div><br>
 
 
 
