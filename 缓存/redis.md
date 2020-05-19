@@ -1,12 +1,14 @@
-* [NoSQL](#nosql)
-* [Redis的特性](#redis的特性)
-* [Redis的性能](#redis的性能)
-* [Redis哨兵](#redis哨兵)
-* [Redis底层数据结构](#redis底层数据结构)
-* [Redis分布式锁](#redis分布式锁)
-* [Redis常见问题](#redis常见问题)
-* [pub/sub](*pubsub)
-* [pipeline](*pipeline)
+* [一、NoSQL](#nosql)
+  * [Redis概述](#redis概述)
+  * [Redis指令](#redis指令)
+* [二、Redis的特性](#redis的特性)
+* [三、Redis的性能](#redis的性能)
+* [四、Redis哨兵](#redis哨兵)
+* [五、Redis底层数据结构](#redis底层数据结构)
+* [六、Redis分布式锁](#redis分布式锁)
+* [七、Redis常见问题](#redis常见问题)
+* [八、pub/sub](*pubsub)
+* [九、pipeline](*pipeline)
 
 
 
@@ -41,6 +43,132 @@ NoSQL数据库分类：
 集合类型 Set：不允许出现相同的元素
 
 应用场景：缓存、任务列表、网站访问统计、数据过期处理、分布式集群架构中session分离
+
+## Redis指令
+### String
+set key value 新建对象
+
+get key 获取对象
+
+getset key value 先获取值再修改值为value
+
+del key 删除
+
+incr key 对value的值加1（如果是字符串，不能加1，会抛出异常）
+
+incrby key n对value的值加n
+
+decrby key n对value的值减n
+
+
+### Hash 
+键值对
+
+hset key1  key2 value新建对象
+
+hmset key1 key2 value2  key3  value3新建多个对象
+
+hgetall key 获取所有对象
+
+hdel key key1删除键为key1的成员
+
+hincrby key key1 n对key的成员中，键为可以的对象的值加n
+
+hexists key key1 判断key中是否有键为key1的对象
+
+hlen key 获取其中的所有对象数量
+
+hkeys key 获取key中所有对象的key
+
+hvalues key 获取key中所有对象的value
+
+### List 
+按照插入顺序排序
+
+rpush key value 对key的序列从右边插入一个value
+
+lpush key value 对key的序列从左边插入一个value
+
+lrange key site1 site2从左开始显示从site1到site2的元素
+
+lindex key site1 显示位置为site1的成员
+
+lpop key 弹出最左边的成员（原子操作）
+
+llen key 返回对象的数量
+
+
+### Set 
+不允许出现重复的元素 不同set中的聚合操作
+
+sadd key value 添加
+
+srem key value 删除
+
+smembers key 获取key对应的所有的值
+
+sismember key value 判断value是否在key的值中，在为1，不在为0
+
+sdiff key1 key2 差集运算，而且和key的顺序有关，是key1-key2
+
+sinter key1 key2 交集运算
+
+sunion key1 key2 并集运算
+
+scard key 获得对应value的数量
+
+srandmember key 随机返回一个成员
+
+sdiffstore  key1 key2 key3 把key2和key3的差集存到key1中
+
+sinterstore key1 key2 key3 把key2和key3的交集存到key1中
+
+sunionstore key1 key2 key3 把key2和key3的并集存到key1中
+
+
+### sorted-set 
+与sort的主要区别是，这其中的每个成员都有一个分数，redis通过这个分数排序，分数可以重复。成员有序，因此，即使访问中部的成员，也是非常高效的
+
+zadd key  分数  value 添加
+
+zscore key value 获取对应成员的分数
+
+zcard key 获取成员的数量
+
+zrem key value 删除成员
+
+zrange key start end |withscores（显示分数）范围查找（start和end是位置的范围）
+
+zrevrange key start end |withscores（显示分数）范围查找并排序（start和end是位置的范围）
+
+zremrangebyrank key start end 按照（位置）范围进行删除
+
+zremrangebyscore key start end 按照分数排名进行删除
+
+zrangebyscore key start end  withscore 按照分数范围显示value和对象
+
+zincrby key 常数n value  给某个成员的分数加n
+
+zcount key small big 显示分数在small ,big之间的成员的个数
+使用场景：大型积分排行榜 构建索引数据
+
+
+### 对keys的通用操作：
+keys * 获取所有的key
+
+keys my?获取所有以my开头的key
+
+del key 删除某个key
+
+exist key 查看某个key是否存在
+
+rename key newkey对key重命名
+
+expire key 时间长度n 设置超时时间
+
+ttl key 查看key所剩的时间
+
+type key 查看key的类型
 
 # Redis的特性
 
@@ -277,5 +405,19 @@ for (;;){
 
 
 # pipeline
+redis的get操作(不单单是get命令)是阻塞的，如果循环取值的话，就算是内网，耗时也是巨大的。
 
+Pipeline：redis的管道命令，允许client将多个请求依次发给服务器（redis的客户端，如jedisCluster，lettuce等都实现了对pipeline的封装），过程中而不需要等待请求的回复，在最后再一并读取结果即可。
 
+使用方式（单机版）：
+```
+//换成真实的redis实例
+Jedis jedis = new Jedis();
+//获取管道
+Pipeline p = jedis.pipelined();
+for (int i = 0; i < 100; i++) {
+    p.get(i);
+}
+//获取结果
+List<Object> results = p.syncAndReturnAll();
+```
