@@ -15,7 +15,7 @@
 * [五、Redis底层数据结构](#redis底层数据结构)
 * [六、Redis分布式锁](#redis分布式锁)
 * [七、Redis常见问题](#redis常见问题)
-* [八、pub/sub](*pubsub)
+* [八、Redis的发布订阅](*redis的发布订阅)
 * [九、pipeline](*pipeline)
 
 
@@ -408,11 +408,23 @@ for (;;){
 
 
 
-# pub/sub
+# Redis的发布订阅
+所谓发布订阅，就是消息发布者发布消息及消息订阅者接收消息，二者通过某种媒介关联起来。在Redis的发布订阅中，存在频道channel，客户端订阅了某channel之后，当发布者通过此channel发布消息时，所有订阅该channel的用户都会收到该消息。
 
+当一个客户端通过 PUBLISH 命令向订阅者发送信息的时候，我们称这个客户端为发布者(publisher)。
+而当一个客户端使用 SUBSCRIBE 或者 PSUBSCRIBE命令接收信息的时候，我们称这个客户端为订阅者(subscriber)。
+为了解耦发布者(publisher)和订阅者(subscriber)之间的关系，Redis 使用了 channel (频道)作为两者的中介 —— 发布者将信息直接发布给 channel ，而 channel 负责将信息发送给适当的订阅者，发布者和订阅者之间没有相互关系，也不知道对方的存在。
 
+Redis发布订阅的底层原理：
+redis-server 里维护了一个字典，字典的键就是一个个 channel ，而字典的值则是一个链表，链表中保存了所有订阅这个 channel 的客户端。SUBSCRIBE 命令的关键，就是将客户端添加到给定 channel 的订阅链表中。
+发布者通过 PUBLISH 命令向订阅者发送消息时，redis-server 会使用给定的频道作为键，在它所维护的 channel 字典中查找记录了订阅这个频道的所有客户端的链表，遍历这个链表，将消息发布给所有订阅者。
 
+Redis发布订阅的应用场景：
+* 1.异步消息通知
+* 2.任务执行通知
+* 3.数据刷新通知
 
+（发布订阅这部分基本转载自大佬的博客https://juejin.im/post/5cf7bf4051882502f9490be8 ）
 # pipeline
 redis的get操作(不单单是get命令)是阻塞的，如果循环取值的话，就算是内网，耗时也是巨大的。
 
