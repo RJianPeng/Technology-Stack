@@ -18,6 +18,7 @@
 
 ## 数据库
    - [Mysql基础](./数据库/Mysql基础.md)
+   - [Zookeeper](./数据库/Zookeeper.md)
 
 ## 面向对象
    - [设计模式](./面向对象/设计模式.md)
