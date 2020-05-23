@@ -72,7 +72,7 @@ decrby key n对value的值减n
 ### Hash 
 键值对
 
-hset key1  key2 value新建对象
+hset key1  key2 value新建对象 若key1 key2都存在则返回0
 
 hmset key1 key2 value2  key3  value3新建多个对象
 
