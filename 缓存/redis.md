@@ -178,6 +178,11 @@ ttl key 查看key所剩的时间
 
 type key 查看key的类型
 
+### 一些特殊操作
+SETNX key value 若key不存在时成功返回 否则失败返回0
+
+SETEX key seconds value  设置key value对，且定义过期时间，如果key已存在则覆盖value。
+
 # Redis的特性
 
 ## 多数据库
