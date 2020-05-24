@@ -153,6 +153,8 @@ zremrangebyrank key start end 按照（位置）范围进行删除
 
 zremrangebyscore key start end 按照分数排名进行删除
 
+zrange key start stop [withscore]：把集合排序后,返回名次[start,stop]的元素  默认是升续排列，在z后面加rev即为降序排列  withscores 是把score也打印出来
+
 zrangebyscore key start end  withscore 按照分数范围显示value和对象
 
 zincrby key 常数n value  给某个成员的分数加n
@@ -172,9 +174,13 @@ exist key 查看某个key是否存在
 
 rename key newkey对key重命名
 
-expire key 时间长度n 设置超时时间
+expire key 时间长度n 设置超时时间 单位为秒
 
-ttl key 查看key所剩的时间
+pexpire key 整数值：设置key的生命周期 毫秒为单位
+
+perisist key：把指定key设置为永久有效
+
+ttl key 查看key所剩的时间 返回为正数为剩余时间 -1为无过期时间 -2为已过期
 
 type key 查看key的类型
 
