@@ -456,7 +456,14 @@ List<Object> results = p.syncAndReturnAll();
 ```
 
 # cluster
+redis cluster：redis官方的多机器部署方案。一组Redis Cluster是由多个Redis实例组成，官方推荐我们使用6实例，其中3个为主节点，3个为从结点。一旦有主节点发生故障的时候，Redis Cluster可以选举出对应的从结点成为新的主节点，继续对外服务，从而保证服务的高可用性。
 
+### 客户端访问
+不同主节点的数据都不同，那么客户端如何知道去哪个主节点访问数据？
+
+Redis Cluster 把所有的数据划分为16384个不同的槽位，可以根据机器的性能把不同的槽位分配给不同的Redis实例，对于Redis实例来说，他们只会存储部门的Redis数据，当然，槽的数据是可以迁移的，不同的实例之间，可以通过一定的协议，进行数据迁移。首先客户端需要保存一份Redis Cluster槽相关的信息，也就是路由表，然后对即将访问的key进行哈希计算，计算出对应的槽位，然后向对应的Redis实例发起查询请求。如果访问的Redis实例中，的确保存着对应槽的数据信息，就会进行返回，否则向客户端返回一个Moved指令，让客户端到正确的地址进行获取。
+
+<div align="center"> <img src="https://github.com/RJianPeng/Technology-Stack/blob/master/%E7%BC%93%E5%AD%98/photo/rediscluster.png"/></div><br>
 
 
 
