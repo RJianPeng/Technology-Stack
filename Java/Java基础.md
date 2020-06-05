@@ -1,21 +1,21 @@
 * [一、字符串](#一字符串)
-* [String](#string)
-* [StringBuilder](#stringbuilder)
-* [StringBuffer](#stringbuffer)
+   * [String](#string)
+   * [StringBuilder](#stringbuilder)
+   * [StringBuffer](#stringbuffer)
 
 * [二、Object九大通用方法](#二object九大通用方法)
-* [clone方法](#clone方法)
-* [equals和hashcode方法](#equals和hashcode方法)
-* [wait、notify、notifyAll方法](#waitnotifynotifyall方法)
-* [finalize、getClass、toString方法](#finalizegetclasstostring方法)
+   * [clone方法](#clone方法)
+   * [equals和hashcode方法](#equals和hashcode方法)
+   * [wait、notify、notifyAll方法](#waitnotifynotifyall方法)
+   * [finalize、getClass、toString方法](#finalizegetclasstostring方法)
 
 * [三、Java关键字](#三java关键字)
-* [private、public、default和protected](#privatepublicdefault和protected)
+   * [private、public、default和protected](#privatepublicdefault和protected)
 
 * [四、接口和抽象类](#四接口和抽象类)
-* [接口](#接口)
-* [抽象类](#抽象类)
-* [多态](#多态)
+   * [接口](#接口)
+   * [抽象类](#抽象类)
+   * [多态](#多态)
 
 * [五、代码编写小细节](#五代码编写小细节)
 
@@ -23,14 +23,14 @@
 * [六、基本类型和封装类型](#六基本类型和封装类型)
 
 * [七、异常](#七异常)
-* [检查异常](#检查异常)
-* [非检查异常](非检查异常)
+   * [检查异常](#检查异常)
+   * [非检查异常](非检查异常)
 
 * [八、Java内部类](#java内部类)
-* [成员内部类](#成员内部类)
-* [局部内部类](#局部内部类)
-* [匿名内部类](#匿名内部类)
-* [静态内部类](#静态内部类)
+   * [成员内部类](#成员内部类)
+   * [局部内部类](#局部内部类)
+   * [匿名内部类](#匿名内部类)
+   * [静态内部类](#静态内部类)
 
 * [九、范型](#九范型)
 
