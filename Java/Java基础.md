@@ -36,6 +36,8 @@
 
 * [十、枚举类型](十枚举类型)
 
+* [十一、ThreadLocal](十一threadlocal)
+
 
 # 一、字符串
 ## String
@@ -390,6 +392,146 @@ public enum EnumDemo {
     abstract void test();
 }
 ```
+
+
+
+# 十一、ThreadLocal
+## ThreadLocal是什么
+定义：提供线程局部变量；一个线程局部变量在多个线程中分别有独立的值（副本）。能够避免一致性问题。
+
+特点：简单（开箱即用）  快速（无额外开销）  安全（线程安全）
+
+应用场景：多线程场景（资源持有，线程一致性，并发计算，线程安全等场景）
+
+实现原理：Java中用哈希表实现
+
+<div align="center"> <img src="https://github.com/RJianPeng/Technology-Stack/blob/master/Java/photo/Threadlocal%E6%A8%A1%E5%9E%8B.png"/></div><br>
+
+<div align="center"> <img src="https://github.com/RJianPeng/Technology-Stack/blob/master/Java/photo/Threadlocal%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86.png"/></div><br>
+
+## ThreadLocal API
+```
+//构造方法
+public ThreadLocal() {
+}
+
+//传入一个行为的工厂方法 SuppliedThreadLocal ThreadLocal的子类 只重写了initvalue方法，里面调用了supplier
+public static <S> ThreadLocal<S> withInitial(Supplier<? extends S> supplier) {
+    return new SuppliedThreadLocal<>(supplier);
+}
+
+//ThreadLocal的初始化方式 调用get（）获取value时若value为空或map为空即调用 懒加载 get不执行他也不执行 类似一个兜底策略
+protected T initialValue() {
+        return null;
+}
+
+//获取ThreadLocal对应的value 若map为空或value为空 则调用initaiValue并返回
+public T get() {
+    Thread t = Thread.currentThread();
+    ThreadLocalMap map = getMap(t);
+    if (map != null) {
+        ThreadLocalMap.Entry e = map.getEntry(this);
+        if (e != null) {
+            @SuppressWarnings("unchecked")
+            T result = (T)e.value;
+            return result;
+        }
+    }
+    return setInitialValue();
+}
+
+//设置value的值
+public void set(T value) {
+    Thread t = Thread.currentThread();
+    ThreadLocalMap map = getMap(t);
+    if (map != null)
+        map.set(this, value);
+    else
+        createMap(t, value);
+}
+
+
+//回收 清空当前线程中ThreadLocalMap里的内容
+public void remove() {
+   ThreadLocalMap m = getMap(Thread.currentThread());
+   if (m != null)
+       m.remove(this);
+}
+```
+
+实际应用：（代码找不到了只有个截图（我太懒了））
+<div align="center"> <img src="https://github.com/RJianPeng/Technology-Stack/blob/master/Java/photo/ThreadLocal%E5%AE%9E%E9%99%85%E4%BD%BF%E7%94%A8.png"/></div><br>
+
+实现自己的ThreadLocal
+```
+package myTreadlocal;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class MyThreadLocal<T> {
+
+    //hashmap中存储了对MyThreadLocal对引用 导致无法回收MyThreadLocal（因为是static）
+    //考虑用整数类型代替MyThreadLocal
+//    static HashMap<Thread, HashMap<MyThreadLocal<?>, Object>> threadLocalMap = new HashMap<Thread, HashMap<MyThreadLocal<?>, Object>>();
+//    static HashMap<MyThreadLocal<?>, Object> getMap() {
+//        Thread thread = Thread.currentThread();
+//        if (!threadLocalMap.containsKey(thread)) {
+//            threadLocalMap.put(thread, new HashMap<MyThreadLocal<?>, Object>());
+//        }
+//        return threadLocalMap.get(thread);
+//    }
+
+
+    //问题：
+    //1。hashmap无限增加
+    //2。初始空间分配是否合理
+    //3。性能是否OK
+    static HashMap<Thread, HashMap<Integer, Object>> threadLocalMap = new HashMap<Thread, HashMap<Integer, Object>>();
+
+    static AtomicInteger atomicInteger = new AtomicInteger();
+
+    //0x61c88647 这个数能让hash值更平均
+    private Integer threadLocalHash = atomicInteger.addAndGet(0x61c88647);
+
+
+
+    static HashMap<Integer, Object> getMap() {
+        Thread thread = Thread.currentThread();
+        if (!threadLocalMap.containsKey(thread)) {
+            threadLocalMap.put(thread, new HashMap<Integer, Object>());
+        }
+        return threadLocalMap.get(thread);
+    }
+
+    protected T initialValue() {
+        return null;
+    }
+
+    public T get() {
+        HashMap<Integer, Object> map = getMap();
+        if (!map.containsKey(this.threadLocalHash)) {
+            map.put(this.threadLocalHash, initialValue());
+        }
+        return (T) map.get(this.threadLocalHash);
+    }
+
+    public void set(T value) {
+        HashMap<Integer, Object> map = getMap();
+        map.put(this.threadLocalHash, value);
+    }
+}
+
+```
+
+个人对ThreadLocal的小理解：
+ThreadLocal的原理就是在Thread中有一个ThreadLocalMap，里面存的value才是线程局部的值，key为ThreadLocal，使用时通过ThreadLocal get/set线程局部变量。
+
+
+
+
+
 
 
 
