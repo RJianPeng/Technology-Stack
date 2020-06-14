@@ -26,6 +26,13 @@ Gradle 提供了局部构建的功能。 如果你在构建一个单独的子项
 
 # Gradle和Maven的区别
 
+## 性能
+Gradle和Maven都采用某种形式的并行项目构建和并行依赖项解析。但是Gradle有三个特性导致其性能高于maven：
+* 1.增量性 gradle会跟踪任务的输入和输出并仅运行必要的内容，并且仅在可能时处理已更改的文件，从而避免了不必要的工作量。
+* 2.Build Cache（构建缓存） —重用具有相同输入的任何其他Gradle构建的构建输出，包括在机器之间。
+* 3.Gradle Daemon —一个长期存在的过程，可将构建信息“热”存储在内存中。
+
+Gradle几乎在所有情况下速度都至少是Maven的两倍
 
 # Gradle解决依赖冲突
 在Gradle中默认是传递依赖的。可以通过修改配置中transitive的值进行修改，为true则传递依赖，为false则不传递依赖，需要手动添加依赖。
@@ -43,3 +50,6 @@ configuration.resolutionStrategy.force(['org.slf4j:slf4j-api:1.6.1'])
 //或者这样写
 resolutionStrategy.setForcedModules(['org.slf4j:slf4j-api:1.6.1'])
 ```
+
+
+Gradle学习参考资料：https://blog.csdn.net/u013700502/article/details/85231505
