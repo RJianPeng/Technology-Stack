@@ -2,6 +2,7 @@
 - [Gradle特性](#gradle特性)
 - [Gradle和Maven的区别](#gradle和maven的区别)
 - [Gradle解决依赖冲突](#gradle解决依赖冲突)
+- [Gradle基础](#gradle基础)
 - [Gradle使用中的问题](#gradle使用过程中的问题)
 
 
@@ -64,6 +65,23 @@ resolutionStrategy.setForcedModules(['org.slf4j:slf4j-api:1.6.1'])
 
 
 Gradle学习参考资料：https://blog.csdn.net/u013700502/article/details/85231505
+
+
+# Gradle基础
+## hello world
+一切的开始：hello world
+```
+task hello {
+  print 'hello world'
+}
+```
+一个简单的hello world代码如上，文件名为build.gradle——gradle默认的脚本构建文件。每个Gradle构建都包含三个基本构建块：project、task、property。
+
+## gradlew
+
+
+
+
 
 
 # Gradle使用过程中的问题
