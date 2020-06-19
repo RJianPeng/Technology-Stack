@@ -78,7 +78,13 @@ task hello {
 一个简单的hello world代码如上，文件名为build.gradle——gradle默认的脚本构建文件。每个Gradle构建都包含三个基本构建块：project、task、property。
 
 ## gradlew
+Gradle Wrapper即Gradlew的作用是简化Gradle本身的安装、部署。不同版本的项目可能需要不同版本的Gradle，手工部署的话比较麻烦，而且可能产生冲突，所以需要Gradle Wrapper帮你搞定这些事情。Gradle Wrapper是Gradle项目的一部分。
 
+Gradle Wrapper的工作流程：
+* 1.解析gradle-wrapper.properties文件，获取项目需要的 gradle 版本下载地址。
+* 2.判断本地用户目录下的~/.gradle目录下是否存在该版本，不存在该版本，走第3点，存在走第4点。
+* 3.下载gradle-wrapper.properties指定版本，并解压到用户目录的下 ~/.gradle文件下。
+* 4.利用 ~/.gradle目录下对应的版本的 gradle 进行相应自动编译操作。
 
 
 
