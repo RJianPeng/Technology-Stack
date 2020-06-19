@@ -1,3 +1,14 @@
+- [Gradle是啥](#gradle是啥)
+- [Gradle特性](#gradle特性)
+- [Gradle和Maven的区别](#gradle和maven的区别)
+- [Gradle解决依赖冲突](#gradle解决依赖冲突)
+- [Gradle使用中的问题](#gradle使用过程中的问题)
+
+
+
+
+
+
 # Gradle是啥
 完全开源的构建自动化系统 直白点就是像maven一样帮你处理项目所需要的包的一个工具。maven配置文件的编写使用的xml，gradle用的是groovy语言，语法类似于java，方便java程序员学习和使用。
 
