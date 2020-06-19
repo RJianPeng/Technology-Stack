@@ -53,3 +53,29 @@ resolutionStrategy.setForcedModules(['org.slf4j:slf4j-api:1.6.1'])
 
 
 Gradle学习参考资料：https://blog.csdn.net/u013700502/article/details/85231505
+
+
+# Gradle使用过程中的问题
+## 初次使用Gradle执行hello world问题
+代码如下
+```
+task hello << {
+  print 'hello world'
+}
+```
+通过gradle -q hello执行后的报错信息为：
+```
+A problem occurred evaluating root project 'bin'.
+> Could not find method leftShift() for arguments [build_8r3b6whmgasaunaudchpimxjd$_run_closure1@96e948] on task ':hello' of type org.gradle.api.DefaultTask.
+```
+问题在于版本，gradle5.0及之后的版本中<<已经过时，删去或者调整版本即可。
+
+
+
+
+
+
+
+
+
+
