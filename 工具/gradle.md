@@ -11,16 +11,25 @@
 
 
 # Gradle是啥
-完全开源的构建自动化系统 直白点就是像maven一样帮你处理项目所需要的包的一个工具。maven配置文件的编写使用的xml，gradle用的是groovy语言，语法类似于java，方便java程序员学习和使用。
+完全开源的构建自动化系统 直白点就是像maven一样帮你处理项目所需要的包的一个工具。maven配置文件的编写使用的xml，gradle用的是groovy语言，语法类似于java，方便java程序员学习和使用。执行时同样是在jvm上执行。
 
 ## Groovy语言
 DSL语言：domain specific language，即特定领域语言。Groovy即DSL语言
 
 介绍：一种基于JVM的敏捷开发语言。可以与Java完美结合并且可以使用Java所有的库。
 
-特性：语法上支持动态类型、闭包等新一代语言特性。无缝集成所有已经存在的Java类库。既支持面向对象也支持面向过程编程。（闭包：内部函数可以访问外部函数的局部变量，即使是外部函数的生命周期结束。闭包函数：声明在函数中的函数。）
+特性：
+* 1.语法上支持动态类型、闭包等新一代语言特性。
+* 2.无缝集成所有已经存在的Java类库。既支持面向对象也支持面向过程编程。（闭包：内部函数可以访问外部函数的局部变量，即使是外部函数的生命周期结束。闭包函数：声明在函数中的函数。）
+* 3.可以不用分号结尾
+* 4.使用def定义变量的时候可以不用指定类型。
+* 5.返回时不用return 最后一句的结果就是返回值
+* 6.单引号和双引号都可以声明一个字符串,但是双引号
 
 优势：更便捷的语言，容易入门。既可以作为编程语言也可以作为脚本语言。
+
+
+
 
 # Gradle特性
 1.基于声明的构建和基于约定的构建
@@ -86,8 +95,11 @@ Gradle Wrapper的工作流程：
 * 3.下载gradle-wrapper.properties指定版本，并解压到用户目录的下 ~/.gradle文件下。
 * 4.利用 ~/.gradle目录下对应的版本的 gradle 进行相应自动编译操作。
 
-
-
+## Gradle工作流程
+* 1.初始化阶段：首先解析settings.gradle
+* 2.Configration阶段：解析每个Project中的build.gradle，解析过程中并不会执行各个build.gradle中的task。
+* 3.经过Configration阶段，Project之间及内部Task之间的关系就确定了。一个 Project 包含很多 Task，每个 Task 之间有依赖关系。Configuration 会建立一个有向图来描述 Task 之间的依赖关系, 所有Project配置完成后，会有一个回调project.afterEvaluate，表示所有的模块都已经配置完了。
+* 4.执行Task任务
 
 
 # Gradle使用过程中的问题
