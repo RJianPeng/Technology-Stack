@@ -2,6 +2,7 @@
 * [Map](#map)
 * [迭代器](#迭代器)
 * [AQS](aqs)
+* [一些小坑](#一些小坑)
 
 # Collection
 
@@ -252,8 +253,11 @@ Java中的迭代器支持这种机制。
 
 
 
+# 一些小坑
 
-
+## 坑1
+Collections.contains使用要慎重，Collections.contains入参是Object类型，如果实际入参和Collections存储的对象类型不匹配，直接返回false。
+//TODO源码还要再看看
 
 
 
