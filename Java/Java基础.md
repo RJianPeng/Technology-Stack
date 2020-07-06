@@ -145,6 +145,7 @@ public boolean equals(Object obj) {
 equals方法是直接通过==来判定两个对象是否相等，==的方式要求对象不止内容相同，而且地址也相同，即必须是同一个对象才会返回true
 hashcode方法是通过计算两个对象的hash值，通过hash值来判定是否两个对象是否相同。equals（）返回为true的两个对象hashcode（）一定相等，hashcode（）相等的两个对象equals（）不一定返回为true
 
+通常情况下推荐使用equals方法判定两个引用类型或封装类型和基本类型是否相同。如果比较的双方有一方为常量，那么用该常量作为equals方法的调用方
 ### 为何重写hashcode就要重写equals
 java.lang.Object中的约定：
 * 1. 在一个应用程序执行期间，如果一个对象的equals方法做比较所用到的信息没有被修改的话，则对该对象调用hashCode方法多次，它必须始终如一地返回同一个整数。
