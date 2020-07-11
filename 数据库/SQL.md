@@ -76,3 +76,29 @@ select * from a right join b where a.id = b.id where a.id = null
 全连接产生的所有记录（双方匹配记录）在表A和表B。如果没有匹配,则对面将包含null。
 
 
+### union
+union操作符用于合并两个或多个 SELECT 语句的结果集。请注意，UNION 内部的 SELECT 语句必须拥有相同数量的列。列也必须拥有相似的数据类型。同时，每条 SELECT 语句中的列的顺序必须相同。
+* union的结果集中不存在重复的数据 如果需要保留重复数据，请使用union all命令
+#### union all
+
+### case
+简单的case函数
+```
+CASE sex
+WHEN '1' THEN '男'
+WHEN '2' THEN '女'
+ELSE '其他' END
+```
+
+case搜索函数：
+```
+CASE WHEN sex = '1' THEN '男' 
+WHEN sex = '2' THEN '女' 
+ELSE '其他' END 
+```
+
+
+
+
+
+
