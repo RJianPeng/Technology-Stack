@@ -101,7 +101,7 @@ ELSE '其他' END
 date_sub(date1,INTERVAL expr type)
 date1是初始的时间，expr是时间长度，type是时间单位。
 
-｜ type支持的值 ｜ 百分比 ｜
+｜ type支持的值 ｜
 ｜ --- ｜
 ｜MICROSECOND｜
 ｜SECOND｜
