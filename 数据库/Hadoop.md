@@ -17,3 +17,26 @@ scan '表名',{FILTER=>"ColumnPrefixFilter('na') AND (ValueFilter(=,'substring:1
 
 # Hive
 
+## UDF 用户自定义开发的函数
+https://www.cnblogs.com/jifengblog/p/9278972.html
+
+
+## 操作指令
+### distribute by指令
+distribute by 类似于partition by指令，对数据进行分区，可以结合sort by使用
+
+### collect list/set
+collect list/set，结合group by指令使用，将分组中的某一列转为数组/集合并返回
+
+### lateral view
+
+### explode
+
+### insert指令
+insert into 在现有的数据基础上插入
+
+insert overwrite将之前的数据删除再插入新的数据
+
+
+
+
