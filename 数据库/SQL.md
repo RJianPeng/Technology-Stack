@@ -97,6 +97,34 @@ WHEN sex = '2' THEN '女'
 ELSE '其他' END 
 ```
 
+### date_sub函数
+date_sub(date1,INTERVAL expr type)
+date1是初始的时间，expr是时间长度，type是时间单位。
+
+｜ type支持的值 ｜
+｜  ----  ｜
+｜MICROSECOND｜
+｜SECOND｜
+MINUTE
+HOUR
+DAY
+WEEK
+MONTH
+QUARTER
+YEAR
+SECOND_MICROSECOND
+MINUTE_MICROSECOND
+MINUTE_SECOND
+HOUR_MICROSECOND
+HOUR_SECOND
+HOUR_MINUTE
+DAY_MICROSECOND
+DAY_SECOND
+DAY_MINUTE
+DAY_HOUR
+YEAR_MONTH
+
+
 
 
 
