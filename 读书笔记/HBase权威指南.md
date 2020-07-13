@@ -38,6 +38,10 @@ Map<byte[], List<KeyValue> getFamilyMap()
 ```
 KeyValue是HBase在存储架构中最底层的类。
 
+KeyValue中数据和左表都是用的byte[]，这样能存储任意类型的数据，保证了最少的内部数据结构开销。
+
+KeyValue中提供了很多比较器，用于KeyValue的排序对比。
+
 
 
 
