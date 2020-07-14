@@ -8,6 +8,8 @@
 
 ### 3.2.1 put方法
 #### 单行put
+1.Put
+
 向HBase中存储数据：
 ```
 void put(Put put) throws IOException
@@ -20,6 +22,8 @@ Put(byte[] row, RowLock rowLock)
 Put(byte[] row, long ts)
 Put(byte[] row, long ts, RowLock,rowLock)
 ```
+Put构造函数中还有一个rowlock（行锁）参数，若要频繁的重复修改某些行，用户有必要创建一个RowLock实例来防止其他客户端访问这些行。
+
 所有的构造函数都需要row，即行键。
 
 创建Put实例之后就可以向该实例添加数据了：
@@ -28,6 +32,8 @@ Put add(byte[] family, byte[] qualifier, byte[] value)
 Put add(byte[] family, byte[] qualifier, long ts, byte[] value)
 Put add(KeyValue kv) throws IOException
 ```
+
+2.KeyValue
 
 KeyValue是表示一个单元格的实例。
 
@@ -42,6 +48,18 @@ KeyValue中数据和左表都是用的byte[]，这样能存储任意类型的数
 
 KeyValue中提供了很多比较器，用于KeyValue的排序对比。
 
+KeyValue实例还有一个变量，代表该实例的唯一坐标：类型（Put/Delete/DeleteColumn/DeleteFamily）
+
+3.客户端的写缓冲区
+
+HBase的API配备了一个客户端的写缓冲区，负责收集put操作，然后通过rpc一次性送往服务器。
+
+以下是其方法
+```
+void setAutoFlush(boolean autoFlush) // 设为false则启动缓冲区
+boolean isAutoFlush //检查标识的状态
+void flushCommits() throws IOException //强制把数据写入服务端
+```
 
 
 
