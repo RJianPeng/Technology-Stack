@@ -60,6 +60,17 @@ void setAutoFlush(boolean autoFlush) // 设为false则启动缓冲区
 boolean isAutoFlush //检查标识的状态
 void flushCommits() throws IOException //强制把数据写入服务端
 ```
+不过用户没必要强制刷写缓冲区，因为数据一旦超出缓冲区指定的大小限制，客户端就会隐式的调用命令对缓冲区进行刷写。
+```
+(HTable)long getWriteBufferSize()
+void setWriteBufferSize(long writeBufferSize) throws IOException //设置客户端缓冲区的大小 默认为2MB
+```
 
+4.Put列表
+```
+void put(List<Put> puts) throws IOException //批量put
+```
+
+客户端会对put进行检查，比如确认实例内容是否为空或是否指定了列，如果检查失败，出错的及后面的put都会被留在缓冲区。
 
 
