@@ -16,11 +16,29 @@ scan '表名',{FILTER=>"ColumnPrefixFilter('na') AND (ValueFilter(=,'substring:1
 
 
 # Hive
+https://www.docs4dev.com/docs/zh/apache-hive/3.1.1/reference/LanguageManual_SortBy.html hive中文手册
+## 概念
 
 ## UDF 用户自定义开发的函数
 https://www.cnblogs.com/jifengblog/p/9278972.html
 
+## UDTF
+UDTF：User-Defined Table-Generating Functions，用来解决输入一行输出多行的问题（explode这种）。
 
+如何编写自己的UDTF函数：
+
+实现org.apache.hadoop.hive.ql.udf.generic.GenericUDTF中的initialize,process,close三种方法。
+其中initialize方法用于返回返回值的个数和列名，
+process是真正处理数据的地方，在这个方法中每调用一次forward函数则产生一行数据，
+close最后调用，对需要清理的方法进行清理。
+
+如何使用UDTF函数：
+* 1.直接在select后面使用
+* 2.配合lateral view使用
+
+
+以上整理自：
+https://www.cnblogs.com/ggjucheng/archive/2013/02/01/2888819.html
 ## 操作指令
 ### distribute by指令
 distribute by 类似于partition by指令，对数据进行分区，可以结合sort by使用
@@ -28,10 +46,17 @@ distribute by 类似于partition by指令，对数据进行分区，可以结合
 ### collect list/set
 collect list/set，结合group by指令使用，将分组中的某一列转为数组/集合并返回
 
-### lateral view
-将一个结果集与一个数组/集合进行笛卡尔积
+### lateral view 和 explode指令
+explode（） extable as a:将一个数组或map转换成多行，即其中一个元素为一行
+
+posexplode（） extable as a,b:功能和explode类似，但是将数组或map转换成多行的时候会保存其在数组或map中的序号，a即其序号从0开始，b即其元素
+
+lateral view 将两个结果集进行笛卡尔积，经常喝explode搭配使用
+
+
 https://blog.csdn.net/guodong2k/article/details/79459282
-### explode
+
+
 
 ### insert指令
 insert into 在现有的数据基础上插入
@@ -57,6 +82,15 @@ unix_timestamp() 得到当前时间戳 只能精确到秒级
 如果参数date不满足yyyy-MM-dd HH:mm:ss形式，则我们需要指定date的形式，在进行转换 
 
 
+### 分组排序函数
+#### row_number()
+row_number() over(partition by a order by b asc) rank，这个方法即将数据根据a分组，然后在每组内根据b的升序对组内所有行对数据进行排序并在每行后面产生一个新列名为rank，rank的值不会重复。
+
+#### rank()
+rank() over(partition by a order by b asc) rank,这个方法和row_number()差不多，唯一的区别就是rank的值存在重复，但是序号会跳跃，比如1，2，2，4。两个2后面跟着的是4
+
+#### dense_rank()
+dense_rank() over(partition by a order by b asc) rank,这个方法和上面的两个都差不多，不同在于rank值存在重复但不会跳跃，比如1,2,2,3。两个2后面跟着的是3。
 
 
 
