@@ -37,8 +37,20 @@ where math > 60
 #### 排序开窗函数
 排序函数(列) OVER(选项)，这里的选项可以是ORDER BY子句，也可以是　OVER（PARTITION BY子句　ORDER BY子句），但不可以是PARTITION BY子句
 
+#### group by与partition by
+从开窗函数中可以看到经常使用partition by对数据进行分组，在SQL中还有一个常用的用于分组的命令：group by。
+但是使用了group by之后，前面的select后面只能跟group by后面的基础属性或者是基础属性的聚合。
+而partition by在开窗函数中使用，前面的select后面可以跟基础属性，可以理解为partition by的分组只提供给开窗函数前面的聚合函数使用，而group by的分组则是提供给整个SQL语句使用。
+
+
 
 ### join
+join 函数通常是连接两个临时表，连接的结果常作为外层select的数据源：
+```
+select * from (select * from tablename1) a join (select * from tablename2) b on a.id = b.id
+```
+这其中a为子查询产生的临时表1的别名，b为子查询产生的临时表2的别名。on后面是连接的条件
+
 #### semi join
 当一张表在另一张表找到匹配的记录之后，半连接（semi-jion）返回第一张表中的记录。
 ```
@@ -131,7 +143,14 @@ substring('abdcsef',1,3) //返回值为abc
 substring('abdcsef',-2) //返回值为ef
 ```
 
+### regexp_replace函数
+```
+regexp_replace(str,pat1,pat2)
+```
+regexp_replace函数即将str字符串中的匹配pat1的子字符串替换为pat2
+
+https://blog.csdn.net/gxftry1st/article/details/22489275
 
 
-
-
+### MYSQL如何实现分组排序（即row_number () over的效果）
+https://www.jianshu.com/p/3419550152d5
