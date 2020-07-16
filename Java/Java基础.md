@@ -38,6 +38,8 @@
 
 * [十一、ThreadLocal](十一threadlocal)
 
+* [十二、Java常见类](十二java常见类)
+
 
 # 一、字符串
 ## String
@@ -530,8 +532,11 @@ public class MyThreadLocal<T> {
 ThreadLocal的原理就是在Thread中有一个ThreadLocalMap，里面存的value才是线程局部的值，key为ThreadLocal，使用时通过ThreadLocal get/set线程局部变量。
 
 
+# 十二、Java常见类
 
-
+## Calendar
+为特定瞬间与一组诸如 YEAR、MONTH、DAY_OF_MONTH、HOUR 等日历字段之间的转换提供了一些方法
+（懒得写了嘿嘿） 详见https://blog.csdn.net/ytasdfg/article/details/81086118
 
 
 
