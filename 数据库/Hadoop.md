@@ -19,10 +19,10 @@ scan '表名',{FILTER=>"ColumnPrefixFilter('na') AND (ValueFilter(=,'substring:1
 https://www.docs4dev.com/docs/zh/apache-hive/3.1.1/reference/LanguageManual_SortBy.html hive中文手册
 ## 概念
 
-## UDF 用户自定义开发的函数
+### UDF 用户自定义开发的函数
 https://www.cnblogs.com/jifengblog/p/9278972.html
 
-## UDTF
+### UDTF
 UDTF：User-Defined Table-Generating Functions，用来解决输入一行输出多行的问题（explode这种）。
 
 如何编写自己的UDTF函数：
@@ -39,6 +39,7 @@ close最后调用，对需要清理的方法进行清理。
 
 以上整理自：
 https://www.cnblogs.com/ggjucheng/archive/2013/02/01/2888819.html
+
 ## 操作指令
 ### distribute by指令
 distribute by 类似于partition by指令，对数据进行分区，可以结合sort by使用
@@ -93,8 +94,62 @@ rank() over(partition by a order by b asc) rank,这个方法和row_number()差�
 dense_rank() over(partition by a order by b asc) rank,这个方法和上面的两个都差不多，不同在于rank值存在重复但不会跳跃，比如1,2,2,3。两个2后面跟着的是3。
 
 
-
-
+## 操作指令使用进阶
+### 使用union横向连接查询结果
+原查询语句
+```
+select ep.productid,productname,count(st.tduserid),count(distinct sl.tduserid),count(distinct sn.tduserid),avg(sl.interval_level)
+from(select productid,productname from xxx.product where productid = '3006090') ep
+join(select tduserid,productid from xxx_page_ex where l_date <= '2019-04-07' and l_date >= date_add('2019-04-07', -6)) st
+on ep.productid=st.productid
+join(select tduserid,interval_level,productid from xxx_launch_ex where l_date <= '2019-04-07' and l_date >= date_add('2019-04-07', -6)) sl
+on st.productid=sl.productid
+join(select tduserid,productid from xxx_newuser_ex where l_date <= '2019-04-07' and l_date >= date_add('2019-04-07', -6)) sn
+on sl.productid=sn.productid
+group by ep.productid,productname;
+```
+改用union后的hql语句
+```
+select '2019-04-07' dates,
+       '3006090' productid,
+       max(pro) productname,
+       sum(pv) pv,
+       sum(uv) uv,
+       cast(sum(duration) as decimal(10,4)) duration,
+       sum(new_uv) new_uv
+from 
+(select productname pro,
+       '0' pv,
+       '0' uv,
+       '0' duration,
+       '0' new_uv
+       from xxx.product where productid = '3006090'
+union all
+select '0' pro,
+       count(tduserid) pv,
+       '0' uv,
+       '0' duration,
+       '0' new_uv
+       from xxx_page_ex where l_date <= '2019-04-07' and l_date >= date_add('2019-04-07', -6) and
+       productid = '3006090'
+union all
+select '0' pro,
+       '0' pv,
+       count(distinct tduserid) uv,
+       avg(interval_level) duration,
+       '0' new_uv
+       from xxx_launch_ex where l_date <= '2019-04-07' and l_date >= date_add('2019-04-07', -6) and
+       productid = '3006090'
+union all
+select '0' pro,
+       '0' pv,
+       '0' uv,
+       '0' duration,
+       count(distinct tduserid) new_uv
+       from xxx_newuser_ex where l_date <= '2019-04-07' and l_date >= date_add('2019-04-07', -6) and
+       productid = '3006090'
+) t;
+```
 
 
 
