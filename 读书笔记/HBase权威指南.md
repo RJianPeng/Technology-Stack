@@ -74,3 +74,24 @@ void put(List<Put> puts) throws IOException //批量put
 客户端会对put进行检查，比如确认实例内容是否为空或是否指定了列，如果检查失败，出错的及后面的put都会被留在缓冲区。
 
 
+5.原子性操作compare-and-set
+检查写的方法：boolean checkAndPut(byte[] row,byte[] family, byte[] qualifier, byte[] value, Put put)
+
+只能检查和修改同一行数据，只能保证同一行数据的原子性保证。
+
+### 3.2.2 get方法
+1.单行get
+```
+Result get(Get get) //单行get方法
+Get(byte[] row) //Get的构造函数
+Get(byte[] row,RowLock rowLock)
+```
+Get还可以通过设置多种参数筛选目标数据
+
+
+
+
+
+
+
+
