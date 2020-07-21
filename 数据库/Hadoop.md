@@ -95,6 +95,15 @@ rank() over(partition by a order by b asc) rank,这个方法和row_number()差�
 #### dense_rank()
 dense_rank() over(partition by a order by b asc) rank,这个方法和上面的两个都差不多，不同在于rank值存在重复但不会跳跃，比如1,2,2,3。两个2后面跟着的是3。
 
+#### str_to_map()
+```
+str_to_map(text, delimiter1, delimiter2]) //使用两个分隔符将文本拆分为键值对。 Delimiter1将文本分成多个K-V对，Delimiter2分割每个K-V对。
+
+select str_to_map('aaa:11&bbb:22', '&', ':');//结果为 aaa:11  bbb:22
+```
+
+
+
 
 ## 操作指令使用进阶
 ### 使用union横向连接查询结果
