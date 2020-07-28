@@ -172,7 +172,9 @@ set hive.auto.convert.join=true;
 ```
 
 
-
+## 踩坑日记
+### DAY1 collect_list/set和group by的羁绊
+今天妄想使用collect_list强行拼接两个值到一个数组里面，然后疯狂报错select后面的值不在group by的子句中的错误，我看了下代码中根本没有写group by。查询资料后发现：collect_list/set必须和group by搭配使用，后改成array来拼接值到数组中，hql正常运行。
 
 
 
