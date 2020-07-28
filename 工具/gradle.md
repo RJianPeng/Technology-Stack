@@ -95,6 +95,14 @@ Gradle Wrapper的工作流程：
 * 3.下载gradle-wrapper.properties指定版本，并解压到用户目录的下 ~/.gradle文件下。
 * 4.利用 ~/.gradle目录下对应的版本的 gradle 进行相应自动编译操作。
 
+Gradle-Wrapper.properties文件中属性含义：
+* distributionUrl：gradle下载的网址。
+gradle文件有三种：-bin.zip（只包含可执行文件-二进制文件，可以用来编译）  -all.zip（包含所有文件包括二进制文件，源代码，文档）   -src.zip（只包含了源代码和文档，不能用于编译）
+* zipStoreBase：它的值一般为GRADLE_USER_HOME，这个值所代表的路径在IDE配置上可以修改。和zipStorePath搭配，为gradle的zip文件下载到本地的位置。
+* zipStorePath：和zipStoreBase搭配，为gradle的zip文件下载到本地的位置。
+* distributionBase：和zipStoreBase类似，一般值为GRADLE_USER_HOME,和distributionPath搭配，为gradle的zip文件解压路径。
+* distributionPath：和distributionBase搭配，为gradle的zip文件解压路径。
+
 ## Gradle工作流程
 * 1.初始化阶段：首先解析settings.gradle
 * 2.Configration阶段：解析每个Project中的build.gradle，解析过程中并不会执行各个build.gradle中的task。
