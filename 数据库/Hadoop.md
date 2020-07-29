@@ -77,6 +77,11 @@ SELECT get_json_object('{"a": "a", "b": "b"}', '$.a')
   */
   
 ```
+### json_tuble
+用来同时解析json字符串的多个字段
+```
+json_tuple(json_str,'key1', 'key2', 'key3') as value1,value2,value3 //同时解析json_str中的key为key1,key2,key3的值装载到value1,value2,value3中。
+```
 
 
 ### unix_timestamp
@@ -102,8 +107,25 @@ str_to_map(text, delimiter1, delimiter2]) //使用两个分隔符将文本拆分
 select str_to_map('aaa:11&bbb:22', '&', ':');//结果为 aaa:11  bbb:22
 ```
 
+### regexp及相关函数
+* 1.regexp
+```
+A REGEXP B //匹配字符串A和正则表达式B
+```
 
+* 2.regexp_extract
+```
+ regexp_extract(string subject, string pattern, int index) //将字符串subject按照pattern正则表达式的规则拆分，返回index指定的字符
+ eg:
+ select regexp_extract('IloveYou','I(.*?)(You)',1) from test1 limit 1;  //返回love
+```
 
+* 3.regexp_replace
+```
+regexp_replace(string A, string B, string C) //将字符串A中的符合Java正则表达式B的部分替换为C
+eg:
+select regexp_replace("IloveYou","You","") from test1 limit 1;//返回Ilove
+```
 
 ## 操作指令使用进阶
 ### 使用union横向连接查询结果
@@ -170,6 +192,13 @@ select '0' pro,
 ```
 set hive.auto.convert.join=true;
 ```
+
+* 2.common join
+common join也叫做shuffle join，reduce join操作。这种情况下生再两个table的大小相当，但是又不是很大的情况下使用的。具体流程就是在map端进行数据的切分，一个block对应一个map操作，然后进行shuffle操作，把对应的block shuffle到reduce端去，再逐个进行联合
+
+* 3.SMBJoin
+smb是sort  merge bucket操作，首先进行排序，继而合并，然后放到所对应的bucket中去，bucket是hive中和分区表类似的技术，就是按照key进行hash，相同的hash值都放到相同的bucket中去。然后对同一个bucket中的元素进行join操作。
+
 
 
 ## 踩坑日记
