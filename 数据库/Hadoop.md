@@ -48,6 +48,13 @@ close最后调用，对需要清理的方法进行清理。
 以上整理自：
 https://www.cnblogs.com/ggjucheng/archive/2013/02/01/2888819.html
 
+
+
+
+## Hive中的复合结构
+
+
+
 ## 操作指令
 ### distribute by指令
 distribute by 类似于partition by指令，对数据进行分区，可以结合sort by使用
