@@ -1,10 +1,20 @@
+- [Hbase](#hbase)
+  - [应用](#应用)
+  - [操作指令](#操作指令)
+- [Hive](#hive)
+  - [概念](#概念)
+  - [Hive中的复合结构](#hive中的复合结构)
+  - [操作指令](#操作指令)
+  - [操作指令使用进阶](#操作指令使用进阶)
+  - [踩坑日记](#踩坑日记)
+
 # Hbase
 
 ## 应用
 ### rowkey的设计原则
 * 1.保持rowkey的唯一性，在插入过程中，若有重复的rowkey，后面的数据会覆盖前面的数据。
 * 2.散列原则，设计的rowkey应该均匀的分布在hbase的节点上。假设rowkey根据时间来设计，那么新数据会大量聚集在同一个节点上，也就是常说的region热点问题。可能导致大量的client访问到同一个regionserver，导致该机器负载过高。
-* 3.为写优化时：
+
 
 
 
@@ -52,6 +62,23 @@ https://www.cnblogs.com/ggjucheng/archive/2013/02/01/2888819.html
 
 
 ## Hive中的复合结构
+### array
+```
+array(var1,var2,....) as arr//array的声明方式
+arr[0] //array的元素调用方式
+```
+
+### map
+```
+map(key1,val1,key2,val2,...) as mapTest//map的声明方式
+mapTest['key1'] //map中value的获取方式
+```
+
+### struct
+```
+struct(val1,val2,val3,...) as structTest //struct的声明方式
+//struct有点像Java中的类的概念，使用时需要预先定义好属性名和类型，获取值时需要根据属性名获取
+```
 
 
 
@@ -88,8 +115,15 @@ SELECT get_json_object('{"a": "a", "b": "b"}', '$.a')
   /**
   *返回为"a","b",null
   */
-  
 ```
+### str_to_map 
+字符串转为map格式，官方定义是：
+
+str_to_map(text, delimiter1, delimiter2)；
+Splits text into key-value pairs using two delimiters. Delimiter1 separates text into K-V pairs, and Delimiter2 splits each K-V pair. Default delimiters are ',' for delimiter1 and '=' for delimiter2.
+将一个字符串转成map，delimiter1将字符串分为多个K-V对，默认为逗号（,）。delimiter2将每个K-V中的key和value分开，默认为等号（=）
+
+
 ### json_tuble
 用来同时解析json字符串的多个字段
 ```
