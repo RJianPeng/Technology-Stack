@@ -6,6 +6,7 @@
    - [Java虚拟机](./Java/Java虚拟机.md)
    - [Java并发](./Java/Java并发.md)
    - [Java容器](./Java/Java容器.md)
+   - [Java小进阶](./Java/Java小进阶.md)
 
 ## 框架
    - [Spring](./框架/Spring.md)
