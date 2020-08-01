@@ -88,8 +88,19 @@ Get(byte[] row,RowLock rowLock)
 ```
 Get还可以通过设置多种参数筛选目标数据
 
+2.Result类
+Result提供的方法如下：
+```
+byte [] getRow(); //返回行键
+byte[] getValue(byte[] family, byte[] qualifier); //返回单元格的值
+byte[] value();//返回第一列的值
+int size();
+boolean isEmpty();
+KeyValue[] raw();
+List<KeyValue> list();
+```
 
-
+3.Get列表
 
 
 
