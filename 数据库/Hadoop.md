@@ -1,4 +1,5 @@
 - [Hbase](#hbase)
+  - [概念](#概念)
   - [应用](#应用)
   - [操作指令](#操作指令)
 - [Hive](#hive)
@@ -9,6 +10,17 @@
   - [踩坑日记](#踩坑日记)
 
 # Hbase
+
+## 概念
+### compaction
+compaction类似与Java中的垃圾回收，用于合并文件，清除过期的多余版本的数据。
+
+HBase中提供了两种compaction，minor和major
+这两种compaction方式的区别是：
+* Minor操作只用来做部分文件的合并操作以及包括minVersion=0并且设置ttl的过期版本清理，不做任何删除数据、多版本数据的清理工作。
+* Major操作是对Region下的HStore下的所有StoreFile执行合并操作，最终的结果是整理合并出一个文件。
+
+
 
 ## 应用
 ### rowkey的设计原则
