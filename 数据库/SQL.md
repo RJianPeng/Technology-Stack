@@ -162,3 +162,27 @@ https://www.jianshu.com/p/3419550152d5
 
 ### MYSQL如何实现row_number()over()函数 即分组排序
 https://www.jianshu.com/p/3419550152d5
+
+
+## SQL基础概念
+### 游标（Cursor）
+游标是一种处理数据的方式，在sql中如果我们需要对查询的结果进行再查询，比如查看结果的第一行、下一行、最后一行、前十行等等操作，简单的通过select不好完成，游标就是针对这种情况而出现的。
+我们可以将“ 游标 ”简单的看成是结果集的一个指针，可以根据需要在结果集上面来回滚动，浏览我需要的数据。
+
+游标的生命周期：声明游标（Declare cursorname Cursor）—>打开游标（Open Cursorname）—>读取数据（Fetch.........From）—>关闭游标（Close Cursorname）—>删除游标（Deallocate Cursorname）
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
