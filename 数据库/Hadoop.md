@@ -18,7 +18,7 @@ compaction类似与Java中的垃圾回收，用于合并文件，清除过期的
 HBase中提供了两种compaction，minor和major
 这两种compaction方式的区别是：
 * Minor操作只用来做部分文件的合并操作以及包括minVersion=0并且设置ttl的过期版本清理，不做任何删除数据、多版本数据的清理工作。
-* Major操作是对Region下的HStore下的所有StoreFile执行合并操作，最终的结果是整理合并出一个文件。
+* Major操作是对Region下的HStore下的所有StoreFile执行合并操作，且会对文件有删除操作，最终的结果是整理合并出一个文件。
 
 
 
@@ -264,10 +264,8 @@ smb是sort  merge bucket操作，首先进行排序，继而合并，然后放�
 ### DAY1 collect_list/set和group by的羁绊
 今天妄想使用collect_list强行拼接两个值到一个数组里面，然后疯狂报错select后面的值不在group by的子句中的错误，我看了下代码中根本没有写group by。查询资料后发现：collect_list/set必须和group by搭配使用，后改成array来拼接值到数组中，hql正常运行。
 
-
-
-
-
+### DAY2 我没踩但我觉得可以记一下之hive的insert
+hive的insert后面变量名与表中的变量名可以不同，只要顺序是一样的就OK。就酱。
 
 
 
