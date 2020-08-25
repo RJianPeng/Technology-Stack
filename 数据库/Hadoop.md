@@ -258,7 +258,19 @@ common join也叫做shuffle join，reduce join操作。这种情况下生再两�
 * 3.SMBJoin
 smb是sort  merge bucket操作，首先进行排序，继而合并，然后放到所对应的bucket中去，bucket是hive中和分区表类似的技术，就是按照key进行hash，相同的hash值都放到相同的bucket中去。然后对同一个bucket中的元素进行join操作。
 
+## 关于资源倾斜的故事
+关于资源倾斜的问题，多的不提，直入主题。
+### 大表和小表join产生的数据倾斜
+使用hive的mapJoin，在map阶段完成表的join工作，如果mapJoin启动成功，运行过程只会看到map而没有join对应的reducer。
+mapJoin的启用方式：
+set hive.auto.convert.join=true(默认是false) //hive是否根据表的大小，选择将common join转化为map join
+set hive.mapjoin.smalltable.filesize=25000000(默认值25M) //设置小表大小上限，即大表小表判断的阈值
+set hive.auto.convert.join.noconditionaltask = true; //是否将多个mapjoin转化为一个mapjoin 主要针对多个小表join大表的问题
+set hive.auto.convert.join.noconditionaltask.size =10000000; //上面那个参数启动时这个才有用，表示将多个mapjoin转化为一个mapjoin时，其小表总和的最大值限制
 
+mapJoin是解决小表join大表时产生数据倾斜问题的最好方式，所谓mapJoin就是在map阶段完成join工作，将所有的小表全量复制到每个map任务节点，然后再将小表缓存在每个map节点的内存里与大表进行join工作，普通的commonJoin则是将数据全部取出，再分发到各个reduce节点进行join工作。大表没有数据分布就不会产生数据倾斜。
+
+对于小表join大表的数据倾斜问题，还可以通过规避的方式进行解决：具体比如给 Join的两个表都增加一列Join key，原理很简单：将小表扩充一列join key，并将小表的总数复制数倍，join key 各不相同，比如第一次为1，复制一次joinkey为2，依次类推；将大表扩充一列join key 为随机数，这个随机数为小表里的joinkey的随机值，如1-5的随机值。这样就实现了将一个大表拆分几分同时处理，而且这样小表扩充了几倍，大表就被对应地分成几份处理。这种方式也可以提高笛卡尔乘积小表join大表的性能。
 
 ## 踩坑日记
 ### DAY1 collect_list/set和group by的羁绊
