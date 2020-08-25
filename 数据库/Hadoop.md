@@ -7,6 +7,7 @@
   - [Hive中的复合结构](#hive中的复合结构)
   - [操作指令](#操作指令)
   - [操作指令使用进阶](#操作指令使用进阶)
+  - [关于数据倾斜的故事](#关于数据倾斜的故事)
   - [踩坑日记](#踩坑日记)
 
 # Hbase
@@ -258,7 +259,7 @@ common join也叫做shuffle join，reduce join操作。这种情况下生再两�
 * 3.SMBJoin
 smb是sort  merge bucket操作，首先进行排序，继而合并，然后放到所对应的bucket中去，bucket是hive中和分区表类似的技术，就是按照key进行hash，相同的hash值都放到相同的bucket中去。然后对同一个bucket中的元素进行join操作。
 
-## 关于资源倾斜的故事
+## 关于数据倾斜的故事
 关于资源倾斜的问题，多的不提，直入主题。
 ### 大表和小表join产生的数据倾斜
 使用hive的mapJoin，在map阶段完成表的join工作，如果mapJoin启动成功，运行过程只会看到map而没有join对应的reducer。
@@ -271,6 +272,27 @@ set hive.auto.convert.join.noconditionaltask.size =10000000; //上面那个参�
 mapJoin是解决小表join大表时产生数据倾斜问题的最好方式，所谓mapJoin就是在map阶段完成join工作，将所有的小表全量复制到每个map任务节点，然后再将小表缓存在每个map节点的内存里与大表进行join工作，普通的commonJoin则是将数据全部取出，再分发到各个reduce节点进行join工作。大表没有数据分布就不会产生数据倾斜。
 
 对于小表join大表的数据倾斜问题，还可以通过规避的方式进行解决：具体比如给 Join的两个表都增加一列Join key，原理很简单：将小表扩充一列join key，并将小表的总数复制数倍，join key 各不相同，比如第一次为1，复制一次joinkey为2，依次类推；将大表扩充一列join key 为随机数，这个随机数为小表里的joinkey的随机值，如1-5的随机值。这样就实现了将一个大表拆分几分同时处理，而且这样小表扩充了几倍，大表就被对应地分成几份处理。这种方式也可以提高笛卡尔乘积小表join大表的性能。
+
+### 大表和大表join产生的数据倾斜
+情况1 大表与大表关联时，其中一张表关联的key有较多的空值，这部分数据容易倾斜到一个reduce上，可以在自查询中先过滤这部分数据，再进行关联。或者是给这些异常的值赋一个随机的值来分散它们。
+
+情况2 当key值都是有效值时，解决办法为设置以下几个参数
+set hive.exec.reducers.bytes.per.reducer = 1000000000 //每个节点的reduce默认处理1G大小的数据
+set hive.optimize.skewjoin = true; //对倾斜的数据使用skew join，就是将倾斜的数据先写入hdfs，然后启动一轮mapjoin专门做部分特殊值的计算。
+set hive.skewjoin.key = 100000 //超过这个数量的就是特殊值，使用skew join
+
+### group by造成的数据倾斜
+group by的时候，可能出现某种类型的数据量特别多，而其他类型数据的数据量特别少，就会造成数据倾斜。解决方式：
+set hive.map.aggr = true ;//这个配置项代表是否在map端进行耦合
+set hive.groupby.skewindata=true;//这个配置项为true的时候，生成的查询计划会有两个MR Job，第一个MR Job会将输入随机分不到Reduce中，这样处理的结果是相同的Group By Key有可能被分发到不同的Reduce中，从而达到负载均衡的目的。 需要注意的是，这个为true时，hive不支持多列上的去重操作。
+
+### count(distinct)以及其他参数不当造成的数据倾斜
+情况1 设置的reduce个数太少
+set mapred.reduce.tasks=800;//设置reducer的个数。默认是设置hive.exec.reducers.bytes.per.reducer这个参数，设置了后hive会自动计算reduce的个数，因此两个参数一般不同时使用。
+
+情况2 当hql中包含count(distinct)时
+使用sum...group by替代
+
 
 ## 踩坑日记
 ### DAY1 collect_list/set和group by的羁绊
