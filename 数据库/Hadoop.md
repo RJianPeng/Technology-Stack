@@ -14,12 +14,30 @@
 
 ## 概念
 ### compaction
-compaction类似与Java中的垃圾回收，用于合并文件，清除过期的多余版本的数据。
+compaction类似与Java中的垃圾回收，用于合并文件，清除过期的多余版本的数据，以短期的I/O操作消耗换取较稳定的查询性能。
 
 HBase中提供了两种compaction，minor和major
 这两种compaction方式的区别是：
-* Minor操作只用来做部分文件的合并操作以及包括minVersion=0并且设置ttl的过期版本清理，不做任何删除数据、多版本数据的清理工作。
-* Major操作是对Region下的HStore下的所有StoreFile执行合并操作，且会对文件有删除操作，最终的结果是整理合并出一个文件。
+* Minor操作（小合并）只用来做部分文件的合并操作以及包括minVersion=0并且设置ttl的过期版本清理，不做任何删除数据、多版本数据的清理工作。
+* Major操作（大合并）是对Region下的HStore下的所有StoreFile执行合并操作最后合并成一个HFile，且会对文件有删除操作，最终的结果是整理合并出一个文件。
+
+为什么需要compaction
+* HBase是基于一种LSM-Tree（Log-Structured Merge Tree）存储模型设计的，写入路径上是先写入WAL（Write-Ahead-Log）即预写日志，再写入memstore缓存，满足一定条件后执行flush操作将缓存数据刷写到磁盘，生成一个HFile数据文件。随着数据不断写入，磁盘HFile文件就会越来越多，文件太多会影响HBase查询性能，主要体现在查询数据的io次数增加。为了优化查询性能，HBase会合并小的HFile以减少文件数量，这种合并HFile的操作称为Compaction，这也是为什么要进行Compaction的主要原因。
+
+（更多内容可见：https://blog.csdn.net/u011598442/article/details/90632702）
+
+### TTL与MinVersion的关系
+如果当前存储的所有时间版本都早于TTL，至少MIN_VERSION个最新版本会保留下来。这样确保在你的查询以及数据早于TTL时有结果返回。
+
+### 数据写入流程
+
+### HBase隔离方案rsgroup
+这个方案主要解决多个业务部分共享集群资源的场景，这一场景集群出现问题可能会影响到所有的业务部分，所以采用rsgroup的方案对同一集群上的多个业务进行隔离。
+具体操作为：
+* 1.将不同的regionserver分到不同的group
+* 2.将不同的表分到不同的group
+
+rsgroup缺点：隔离不彻底，hdfs层还是共用，如果datanode出现异常，还是会影响到多个业务。
 
 
 
