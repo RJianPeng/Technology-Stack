@@ -10,6 +10,9 @@
   - [关于数据倾斜的故事](#关于数据倾斜的故事)
   - [踩坑日记](#踩坑日记)
 
+- [YARN](#yarn)
+
+- [Tez](#tez)
 # Hbase
 
 ## 概念
@@ -18,7 +21,7 @@ compaction类似与Java中的垃圾回收，用于合并文件，清除过期的
 
 HBase中提供了两种compaction，minor和major
 这两种compaction方式的区别是：
-* Minor操作（小合并）只用来做部分文件的合并操作以及包括minVersion=0并且设置ttl的过期版本清理，不做任何删除数据、多版本数据的清理工作。
+* Minor操作（小合并）只用来做部分文件的合并操作，不做任何删除数据、多版本数据的清理工作。
 * Major操作（大合并）是对Region下的HStore下的所有StoreFile执行合并操作最后合并成一个HFile，且会对文件有删除操作，最终的结果是整理合并出一个文件。
 
 为什么需要compaction
@@ -30,6 +33,22 @@ HBase中提供了两种compaction，minor和major
 如果当前存储的所有时间版本都早于TTL，至少MIN_VERSION个最新版本会保留下来。这样确保在你的查询以及数据早于TTL时有结果返回。
 
 ### 数据写入流程
+* 1.client连接zookeeper获取相关的regionserver的信息
+* 2.向regionserver发出写请求，一次将数据写入MemoryStore和HLog，只有这两个都写入成功，此次写入才算成功。写入MemoryStore和HLog是原子性的，要么都成功要么都失败。
+* 3.当写入MemoryStore的数据大小达到某个阈值之后，会讲MemoryStore flush成StoreFile文件，当StoreFile文件增长到一定数量之后，会触发Compact机制，将多个StoreFile合并成一个大的StoreFile文件，如果Region大到一定阈值，会将Region一分为二。
+
+一个Region只存储一个Column Family的数据，或者一个Column Family的一部分。当Region达到一定大小之后，会根据Rowkey的排序，划分多个Region每一个Region又划分多个Store对象，每个Store对象，包括一个MemoryStore 和一个到多个StoreFile，MemoryStore是数据在内存中的实体，并且是有序的。StoreFile是HFile的一层封装。
+
+HLog是WAL的一种实现，预写日志，用于保证数据不会丢失。每一个HBase的更新操作，都会先写入MemoryStore中，然后更新到HLog中，只有成功更新到HLog之后，这条数据才会更新成功。这样，就算MemoryStore中数据丢失，也可以通过HLog恢复。 注意，一般的WAL预写日志，是先写入日志，再写入内存的，而HBase是先写入内存，后写入日志，依托MVCC模式，确保数据不会丢失。
+
+### 数据读取流程
+* 1.跟Zookeeper简历连接，通过访问Meta Regionserver节点信息，HBase的meta表缓存到本地，获取要访问的表的Region的信息。
+* 2.对该regionserver发起请求
+* 3.Regionserver先扫描自己的Memorystore，如果没有找到，就会扫描BlockCache加速读内容的缓冲区，如果还没有找到，就会到StoreFile中查找这条数据，然后将这条数据返回给client
+
+### 数据删除流程
+不会立即删除，而是先在指定存储单元上标记删除，等到下一次region合并或者分裂的时候才会移除数据
+
 
 ### HBase隔离方案rsgroup
 这个方案主要解决多个业务部分共享集群资源的场景，这一场景集群出现问题可能会影响到所有的业务部分，所以采用rsgroup的方案对同一集群上的多个业务进行隔离。
@@ -39,7 +58,12 @@ HBase中提供了两种compaction，minor和major
 
 rsgroup缺点：隔离不彻底，hdfs层还是共用，如果datanode出现异常，还是会影响到多个业务。
 
+### WAL解析
+HBase的Write Ahead Log (WAL)提供了一种高并发、持久化的日志保存与回放机制。每一个业务数据的写入操作（PUT / DELETE）都会记账在WAL中。
 
+WAL最重要的作用是灾难恢复。和MySQL 的BIN log类似，它记录所有的数据改动。一旦服务器崩溃，通过重放log，我们可以恢复崩溃之前的数据。这也意味如果写入WAL失败，整个操作将认为失败。
+
+HLog是实现WAL的类。一个HRegionServer对应一个HLog实例，这样主要是如果一个region对应一个HLog，会需要并发写入大量的文件。HLog内部通过AtomicLong保证线程安全。
 
 ## 应用
 ### rowkey的设计原则
@@ -322,6 +346,15 @@ hive的insert后面变量名与表中的变量名可以不同，只要顺序是�
 
 
 
+# YARN
+## 简介
+Yarn是Hadoop集群的资源管理系统。它主要包括两部分功能：
+* 1. ResourceManagement 资源管理
+* 2. JobScheduling/JobMonitoring 任务调度监控
+
+Yarn的另一个目标就是拓展Hadoop，使得它不仅仅可以支持MapReduce计算，还能很方便的管理诸如Hive、Hbase、Pig、Spark/Shark等应用。这种新的架构设计能够使得各种类型的应用运行在Hadoop上面，并通过Yarn从系统层面进行统一的管理，也就是说，有了Yarn，各种应用就可以互不干扰的运行在同一个Hadoop系统中，共享整个集群资源。
+
+（详解可见https://blog.csdn.net/suifeng3051/article/details/49486927）
 
 
 
