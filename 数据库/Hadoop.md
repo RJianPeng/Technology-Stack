@@ -70,6 +70,9 @@ HLog是实现WAL的类。一个HRegionServer对应一个HLog实例，这样主�
 * 1.保持rowkey的唯一性，在插入过程中，若有重复的rowkey，后面的数据会覆盖前面的数据。
 * 2.散列原则，设计的rowkey应该均匀的分布在hbase的节点上。假设rowkey根据时间来设计，那么新数据会大量聚集在同一个节点上，也就是常说的region热点问题。可能导致大量的client访问到同一个regionserver，导致该机器负载过高。
 
+### hbase的预分区设计
+HBase默认建表时有一个region，这个region的rowkey是没有边界的，即没有startkey和endkey，在数据写入时，所有数据都会写入这个默认的region，随着数据量的不断  增加，此region已经不能承受不断增长的数据量，会进行split，分成2个region。在此过程中，会产生两个问题：1.数据往一个region上写,会有写热点问题。2.region split会消耗宝贵的集群I/O资源。基于此我们可以控制在建表的时候，创建多个空region，并确定每个region的起始和终止rowky，这样只要我们的rowkey设计能均匀的命中各个region，就不会存在写热点问题。自然split的几率也会大大降低。当然随着数据量的不断增长，该split的还是要进行split。像这样预先创建hbase表分区的方式，称之为预分区。
+
 
 
 
@@ -114,6 +117,16 @@ close最后调用，对需要清理的方法进行清理。
 https://www.cnblogs.com/ggjucheng/archive/2013/02/01/2888819.html
 
 
+### hive中内部表和外部表的区别与创建方法
+Hive 创建内部表时，会将数据移动到数据仓库指向的路径；若创建外部表，仅记录数据所在的路径，
+不对数据的位置做任何改变。在删除表的时候，内部表的元数据和数据会被一起删除，
+而外部表只删除元数据，不删除数据。这样外部表相对来说更加安全些，数据组织也更加灵活，方便共享源数据。
+
+需要注意的是传统数据库对表数据验证是 schema on write（写时模式），而 Hive 在load时是不检查数据是否
+符合schema的，hive 遵循的是 schema on read（读时模式），只有在读的时候hive才检查、解析具体的
+数据字段、schema。
+读时模式的优势是load data 非常迅速，因为它不需要读取数据进行解析，仅仅进行文件的复制或者移动。
+写时模式的优势是提升了查询性能，因为预先解析之后可以对列建立索引，并压缩，但这样也会花费要多的加载时间。
 
 
 ## Hive中的复合结构
@@ -323,6 +336,7 @@ set hive.exec.reducers.bytes.per.reducer = 1000000000 //每个节点的reduce默
 set hive.optimize.skewjoin = true; //对倾斜的数据使用skew join，就是将倾斜的数据先写入hdfs，然后启动一轮mapjoin专门做部分特殊值的计算。
 set hive.skewjoin.key = 100000 //超过这个数量的就是特殊值，使用skew join
 
+除了skew join 还可以考虑SMB Join解决大表join大表时产生的数据倾斜问题
 ### group by造成的数据倾斜
 group by的时候，可能出现某种类型的数据量特别多，而其他类型数据的数据量特别少，就会造成数据倾斜。解决方式：
 set hive.map.aggr = true ;//这个配置项代表是否在map端进行耦合
