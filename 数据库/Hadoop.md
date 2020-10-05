@@ -167,7 +167,9 @@ lateral view 将两个结果集进行笛卡尔积，经常喝explode搭配使用
 
 https://blog.csdn.net/guodong2k/article/details/79459282
 
-
+#### posexplode指令
+该指令相对于explode()指令会多产生一个出参，该参数可以理解为该元素在原集合中的下表，且该参数会在序号参数的前面。
+//TODO 下次遇到使用场景留个demo
 
 ### insert指令
 insert into 在现有的数据基础上插入
@@ -241,6 +243,10 @@ regexp_replace(string A, string B, string C) //将字符串A中的符合Java正�
 eg:
 select regexp_replace("IloveYou","You","") from test1 limit 1;//返回Ilove
 ```
+### 开窗函数
+普通的聚合函数聚合的行集是组,开窗函数聚合的行集是窗口。因此,普通的聚合函数每组(Group by)只返回一个值，而开窗函数则可为窗口中的每行都返回一个值。简单理解，就是对查询的结果多出一列，这一列可以是聚合值，也可以是排序值，同时不会影响其他的基础字段。
+
+
 
 ## 操作指令使用进阶
 ### 使用union横向连接查询结果
@@ -348,6 +354,18 @@ set mapred.reduce.tasks=800;//设置reducer的个数。默认是设置hive.exec.
 
 情况2 当hql中包含count(distinct)时
 使用sum...group by替代
+
+### hive中的数据抽样方法
+#### tablesample()函数
+```
+create table xxx_new as select * from xxx tablesample(10 percent) //从原表中抽取百分之十的数据放入临时表中
+
+tablesample(n M) //指定抽样数据的大小，单位为M。
+
+tablesample(n rows) //指定抽样数据的行数，其中n代表每个map任务均取n行数据，map数量可通过hive表的简单查询语句确认
+
+select * from table_01 tablesample(bucket 1 out of 10 on rand())//通过随机的方式将数据分放到十个桶中，并抽取第一个桶中的数据
+```
 
 
 ## 踩坑日记
