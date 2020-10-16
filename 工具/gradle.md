@@ -109,6 +109,16 @@ gradle文件有三种：-bin.zip（只包含可执行文件-二进制文件，�
 * 3.经过Configration阶段，Project之间及内部Task之间的关系就确定了。一个 Project 包含很多 Task，每个 Task 之间有依赖关系。Configuration 会建立一个有向图来描述 Task 之间的依赖关系, 所有Project配置完成后，会有一个回调project.afterEvaluate，表示所有的模块都已经配置完了。
 * 4.执行Task任务
 
+## gradle部分指令
+### compile和testCompile
+compile和testCompile都是用于声明依赖，但是所声明的依赖使用范围不同，compile使用范围为src下面的代码，testCompile声明的依赖只能用于测试代码。
+
+## Gradle依赖树 
+打印gradle依赖树指令：gradle -q:项目名:dependencies --configuration compile
+
+依赖树中的特殊符号解析：
+（\*）表示这个依赖在依赖树中的其他地方也有出现
+-> 指向依赖在版本冲突中最后选择的版本
 
 # Gradle使用过程中的问题
 ## 初次使用Gradle执行hello world问题
