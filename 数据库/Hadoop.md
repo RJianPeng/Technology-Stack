@@ -128,12 +128,38 @@ Hive 创建内部表时，会将数据移动到数据仓库指向的路径；若
 读时模式的优势是load data 非常迅速，因为它不需要读取数据进行解析，仅仅进行文件的复制或者移动。
 写时模式的优势是提升了查询性能，因为预先解析之后可以对列建立索引，并压缩，但这样也会花费要多的加载时间。
 
+### hive中的分桶表
+分桶和分区：分区提供了一个隔离数据和优化查询的便利的方式，但是分区的数量过多时会对NameNode造成比较大的压力。这种场景时可以考虑使用分桶来将数据集分解成容易管理若干部分。
+
+分桶表的创建语句：
+```
+create table bucket_tab(id bigint comment '标示位',name string comment '名称') comment'分桶表' clustered by(id) into 4 buckets;
+```
+
+分区又分桶表的创建语句：
+```
+create table bucket_tab(id bigint comment '标志位',
+                        name string comment '名称'
+			)comment '分区分桶表'
+			partitioned by(time string comment'时间')
+			clustered by(id) sorted by(name) into 4 buckets;
+```
+分桶表使用注意：
+* 1.set hive.enforce.bucketing = true；强制hive为目标表的分桶初始化过程设置一个正确的reducer个数，否则就需要我们自己来设置和分桶个数相匹配的reducer个数。例如 set mapred.reduce.tesks = 96
+
+分桶的好处：
+* 1.分桶加快了join查询的速度：在join的时候，如果左右两个表以相同的方式划分桶，这样处理左边表的某个桶时就能只取右边表中对应的那个桶，这种便采用了map-side join的方式，避免全表进行笛卡尔积的比对。
+
+* 2.抽样操作更快：table_sample()方法
+
 
 ## Hive中的复合结构
 ### array
 ```
 array(var1,var2,....) as arr//array的声明方式
 arr[0] //array的元素调用方式
+size(arr)//获取数组的长度
+(ps:length(字符串)//获取字符串长度)
 ```
 
 ### map
@@ -206,6 +232,24 @@ unix_timestamp() 得到当前时间戳 只能精确到秒级
 如果参数date满足yyyy-MM-dd HH:mm:ss形式，则可以直接unix_timestamp(string date) 得到参数对应的时间戳 
 如果参数date不满足yyyy-MM-dd HH:mm:ss形式，则我们需要指定date的形式，在进行转换 
 
+### left semi join
+```
+select a.id left a semi join b on a.id = b.id;
+//这种left join左表遇到右表中多个符合条件的数据时，除了第一个会跳过后面的，即左表的数据只会返回一次。且最后产生的结果只允许出现左表中的数据
+```
+
+### 关于排序
+#### order by
+order by 全局排序，全局只使用一个reducer来进行排序的工作。
+
+#### sort by
+sort by 局部排序，排序工作分多个reducer来实现，所以不能保证全局有序，只能保证局部有序。
+
+#### distribute by
+一般搭配sort by使用，单独的功能为定义如何将map出来的数据分发到各个reducer上，搭配sort by可以指定分配规则并进行局部排序
+
+#### cluster by
+cluster by的功能就是distribute by 和sort by 相结合，有点区别的是cluster只能是按照降序来排序。
 
 ### 分组排序函数
 #### row_number()
