@@ -136,3 +136,7 @@ eg:
 ```
 insert into table test(id,name) values(1,'github') on duplicate key update name = 'github'//ID为主键，如果数据库中已经存在ID为1的数据，那么这个时候会更新name字段为github
 ```
+
+## explain的各个字段详解
+* id 查询序号，即为sql语句执行的顺序
+* select type，查询类型，有以下几种值：SIMPLE，PRIMARY，UNION。SIMPLE表示简单的查询，没有union和子查询什么的。PRIMARY，在有子查询的sql中，最外层的查询语句就是primary类型。UNION，union语句中第二个或者是后面那个就是这种查询类型（union多个语句的时候呢？是只有最后那个是这种类型吗？）
