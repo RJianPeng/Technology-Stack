@@ -138,5 +138,17 @@ insert into table test(id,name) values(1,'github') on duplicate key update name 
 ```
 
 ## explain的各个字段详解
-* id 查询序号，即为sql语句执行的顺序
-* select type，查询类型，有以下几种值：SIMPLE，PRIMARY，UNION。SIMPLE表示简单的查询，没有union和子查询什么的。PRIMARY，在有子查询的sql中，最外层的查询语句就是primary类型。UNION，union语句中第二个或者是后面那个就是这种查询类型（union多个语句的时候呢？是只有最后那个是这种类型吗？）
+* id 查询序号：即为sql语句执行的顺序
+* select type：查询类型，有以下几种值：SIMPLE，PRIMARY，UNION。SIMPLE表示简单的查询，没有union和子查询什么的。PRIMARY，在有子查询的sql中，最外层的查询语句就是primary类型。UNION，union语句中第二个或者是后面那个就是这种查询类型（union多个语句的时候呢？是只有最后那个是这种类型吗？）
+* table：输出的数据所用的表
+* type：连接类型，有多个参数。1.system，表仅有一行，很少出现这种情况。    2.const，表最多有一个匹配行，const用于比较primary key 或者unique索引。因为只匹配一行数据，所以很快。
+* possible_keys：提示使用哪个索引会在该表中找到行，不太重要
+* keys：实际查询中使用的索引
+* key_len：mysql使用的索引长度
+* rows：查询时便利的行数
+
+
+
+
+
+
