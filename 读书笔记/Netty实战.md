@@ -19,3 +19,28 @@ Java中的java.nio.channels.Selector是Java的非阻塞I/O实现的关键。它�
 
 ### Netty的特性
 <div align="center"> <img src="https://github.com/RJianPeng/Technology-Stack/blob/master/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/photo/Netty-feature.jpeg"/></div><br>
+
+
+异步：异步事件也可以具有某种有序的关系。通常，你只有在已经问了一个问题之后才会得到一个和它对应的答案，而在你等待它的同时你也可以做点别的事情。
+
+异步和可伸缩性的联系：
+* 1.非阻塞网络调用使得我们可以不必等待一个操作的完成。完全异步的I/O正式基于这种特性构建的，而且更进一步，异步方法会立即返回，并且在完成时，会直接或稍后某个事件通知用户。
+* 2.选择器使得我们能够通过较少的线程便可监视许多连接上的事件。
+
+## Netty的核心组件
+#### Channel
+是Java NIO的一个基本构造。可以看作是传入或者传出数据的载体，因此它可以被打开或者被关闭，连接或者断开连接
+
+#### 回调
+一个方法，一个提供给另一个方法使用的方法的引用，前者可以在适当的时候调用后者。
+
+#### Future
+提供了另一种在操作完成时通知应用程序的方式。这个结果可以看作是一个异步操作的结果的占位符；它将在未来的某个时刻完成，并提供对其结果的访问。JDK预设了interface，java.util.concurrent.Future，其所提供的实现只允许手动检查对应的操作是否完成或者一直阻塞到它完成。（可见https://github.com/RJianPeng/Technology-Stack/blob/master/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/Java8%E5%AE%9E%E6%88%98.md#%E7%AC%AC%E5%8D%81%E4%B8%80%E7%AB%A0completablefuture%E7%BB%84%E5%90%88%E5%BC%8F%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B）
+
+所以Netty提供了自己的实现ChannelFuture，这个实现提供了几种方法，让我们可以注册监听器而不用手动检查是否完成。
+
+#### 事件和ChannelHandler
+Netty使用不同的事件来通知我们状态的改变或者是操作的状态，这使得我们能够基于已经发生的事件来触发适当的动作。每个事件都可以分发给ChannelHandler类中的某个用户实现的方法。这是一个很好的将事件驱动范式直接转换为应用程序构件块的例子。
+
+# QA
+### ChannelFuture是Future和回调的结合，能够避免我们手动去查询结果是否完成，那么ChannelFuture是什么时候知道该调用监听器的回调方法的呢？
