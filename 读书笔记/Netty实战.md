@@ -1,4 +1,5 @@
 * -[第一章、Netty——异步和事件驱动](#第一章Netty异步和事件驱动)
+* -[第二章、你的第一款Netty应用程序](#第二章你的第一款Netty应用程序)
 
 # 第一章、Netty——异步和事件驱动
 
@@ -41,6 +42,20 @@ Java中的java.nio.channels.Selector是Java的非阻塞I/O实现的关键。它�
 
 #### 事件和ChannelHandler
 Netty使用不同的事件来通知我们状态的改变或者是操作的状态，这使得我们能够基于已经发生的事件来触发适当的动作。每个事件都可以分发给ChannelHandler类中的某个用户实现的方法。这是一个很好的将事件驱动范式直接转换为应用程序构件块的例子。
+
+ChannelHandler，是一个接口族的父接口，它的实现负责接收并响应事件通知。
+
+# 第二章、你的第一款Netty应用程序
+每一个Chennel都拥有一个与之相关联的ChannelPipeline，其持有一个ChannelHandler的实例链。
+
+@Shareable，表示多个Channel可以共享这个ChannelHandler
+
+### Netty服务器
+所有的Netty服务器都需要以下两个部分：
+* 1.至少一个ChannelHandler——该组件实现了服务器对从客户端接受的数据的处理，即它的业务逻辑。
+* 2.引导-配置服务器的启动代码。
+
+
 
 # QA
 ### ChannelFuture是Future和回调的结合，能够避免我们手动去查询结果是否完成，那么ChannelFuture是什么时候知道该调用监听器的回调方法的呢？
