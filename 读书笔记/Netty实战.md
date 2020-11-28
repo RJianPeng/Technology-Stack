@@ -55,6 +55,29 @@ ChannelHandler，是一个接口族的父接口，它的实现负责接收并响
 * 1.至少一个ChannelHandler——该组件实现了服务器对从客户端接受的数据的处理，即它的业务逻辑。
 * 2.引导-配置服务器的启动代码。
 
+# 第三章、Netty的组件和设计
+### Channel、EventLoop和ChannelFuture
+channel——socket；
+EventLoop——控制流、多线程处理、并发；
+ChannelFuture——异步通知
+
+#### Channel
+基本的I/O操作（bind(),connect(),read(),write())依赖于底层网络传输提供的原语。
+
+#### EventLoop
+EventLoop定义了Netty的核心抽象，用于处理连接的生命周期中所发生的事件。
+
+* 一个EventLoopGroup包含一个或多个EventLoop
+* 一个EventLoop在他的生命周期只和一个Thread绑定
+* 所有由EventLoop处理的I/O事件都将在它专有的Thread上被处理。
+* 一个channel在它的生命周期内只注册于一个EventLoop
+* 一个EventLoop可能会被分配给一个或多个Channel
+
+<div align="center"> <img src="https://github.com/RJianPeng/Technology-Stack/blob/master/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/photo/Channel%26EventLoop%26Channel.jpeg"/></div><br>
+
+### ChannelHandler和ChannelPipeline
+#### ChannelHandler
+
 
 
 # QA
