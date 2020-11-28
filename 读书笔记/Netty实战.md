@@ -76,8 +76,23 @@ EventLoop定义了Netty的核心抽象，用于处理连接的生命周期中所
 <div align="center"> <img src="https://github.com/RJianPeng/Technology-Stack/blob/master/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/photo/Channel%26EventLoop%26Channel.jpeg"/></div><br>
 
 ### ChannelHandler和ChannelPipeline
-#### ChannelHandler
 
+#### ChannelHandler
+充当了处理入站和出站数据的应用程序逻辑的容器。它的方法是由网络事件触发的。
+* ChannelInboundHandler：接收入站事件和数据
+
+#### ChannelPipeline
+##### 为ChannelHandler链提供了容器，并定义了用于在该链上传播入站和出站事件流的API。
+ChannelHandler安装到ChannelPipeline的过程如下：
+* 1.一个ChannelInitializer的实现被注册到了ServerVootstrap中
+* 2.当ChannelInitializer.initChannel()方法被调用时，该方法中ChannelInitializer将在ChannelPipeline中注册一组自定义的ChannelHandler
+* 3.ChannelInitializer将它自己从ChannelPipeline中移除，可以理解为ChannelInitializer为ChannelPipeline中的第一个
+
+Netty能够确保数据只会在具有相同定向类型的两个ChannelHandler之间传递（channelInboundHandler和ChannelOutboundHandler为不同的），当ChannelHandler被添加到ChannelPipeline时，它将被分配一个ChannelHandlerContext，其代表了ChannelHandler和ChannelPipeline之间的绑定，这个对象主要用于写出站数据。
+
+在Netty中，有两种发消息的方式：直接写到Channel中；也可以写到ChannelHandlerContext中。前一种方式会导致消息从ChannelPipeline的尾端开始流动，后者将导致消息从ChannelPipeline的下一个ChannelHandler开始流动。
+
+//TODO 需要demo来看下实际情况
 
 
 # QA
