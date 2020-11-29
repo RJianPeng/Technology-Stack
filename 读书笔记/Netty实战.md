@@ -94,6 +94,13 @@ Netty能够确保数据只会在具有相同定向类型的两个ChannelHandler�
 
 //TODO 需要demo来看下实际情况
 
+##### 为什么需要ChannelHandler的适配器
+因为这些适配器提供了定义在对应接口中的所有方法的默认实现，所以在开发过程中我们只需要重写部分需要的方法就可以得到一个ChannelHandler了。
+
+#### 引导
+即引导客户端进行链接建立或引导服务端监听连接建立的Bootstrap（客户端）和ServerBootstrap（服务端）
+
+服务端会有两个EventLoopGroup，第一个负责为传入连接请求创建Channel，第二个会为该Channel分配一个EventLoop
 
 # QA
 ### ChannelFuture是Future和回调的结合，能够避免我们手动去查询结果是否完成，那么ChannelFuture是什么时候知道该调用监听器的回调方法的呢？
