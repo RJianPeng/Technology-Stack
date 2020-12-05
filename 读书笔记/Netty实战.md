@@ -2,6 +2,7 @@
 * -[第二章、你的第一款Netty应用程序](#第二章你的第一款Netty应用程序)
 * -[第三章、Netty的组件和设计](#第三章Netty的组件和设计)
 * -[第四章、传输](#第四章传输)
+* -[第五章、ByteBuf](#第五章ByteBuf)
 
 # 第一章、Netty——异步和事件驱动
 
@@ -113,6 +114,24 @@ ChannelConfig包含了该Channel的所有配置设置，并且支持热更新。
 NIO提供了一个所有I/O操作的全异步实现，它利用了子jdk的基于选择器的API。选择器背后的概念是充当一个注册表，在那里你可以在Channel的状态发生变化时得到通知。选择器运行在一个检查状态变化，并对其做出相应响应的线程上，在应用程序对状态的改变做出响应之后，选择器将会被重置，并将重复这个过程。 
 
 <div align="center"> <img src="https://github.com/RJianPeng/Technology-Stack/blob/master/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/photo/selector.jpeg"/></div><br>
+
+# 第五章、ByteBuf
+Netty的ByteBuf用于替代JDK的ByteBuffer，是Netty的数据容器。
+
+##### ByteBuf的优点
+* 1.可以被用户自定义的缓冲区类型扩展
+* 2.通过内置的复合缓冲区实现了透明的零拷贝（即不用从内核空间拷贝到用户空间）
+* 3.容量可以按需增长（动态增长）
+* 4.读写模式不用切换（ByteBuffer的flip方法）
+* 5.读和写使用了不同的索引（读写时字符的起始位置）
+* 6.支持方法的链式调用 ？
+* 7.支持引用计数 ？
+* 8.支持池化 ？
+
+##### ByteBuf的工作方式
+维护两个不同的索引，一个用于读取，一个用于写入
+
+
 
 
 # QA
