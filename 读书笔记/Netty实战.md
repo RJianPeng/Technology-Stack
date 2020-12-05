@@ -1,5 +1,7 @@
 * -[第一章、Netty——异步和事件驱动](#第一章Netty异步和事件驱动)
 * -[第二章、你的第一款Netty应用程序](#第二章你的第一款Netty应用程序)
+* -[第三章、Netty的组件和设计](#第三章Netty的组件和设计)
+* -[第四章、传输](#第四章传输)
 
 # 第一章、Netty——异步和事件驱动
 
@@ -101,6 +103,17 @@ Netty能够确保数据只会在具有相同定向类型的两个ChannelHandler�
 即引导客户端进行链接建立或引导服务端监听连接建立的Bootstrap（客户端）和ServerBootstrap（服务端）
 
 服务端会有两个EventLoopGroup，第一个负责为传入连接请求创建Channel，第二个会为该Channel分配一个EventLoop
+
+
+# 第四章、传输
+传输的核心是Channel接口，它被用于所有的I/O操作。每个Channel都会被分配一个Channelpipeline和ChannelConfig。
+
+ChannelConfig包含了该Channel的所有配置设置，并且支持热更新。
+
+NIO提供了一个所有I/O操作的全异步实现，它利用了子jdk的基于选择器的API。选择器背后的概念是充当一个注册表，在那里你可以在Channel的状态发生变化时得到通知。选择器运行在一个检查状态变化，并对其做出相应响应的线程上，在应用程序对状态的改变做出响应之后，选择器将会被重置，并将重复这个过程。 
+
+<div align="center"> <img src="https://github.com/RJianPeng/Technology-Stack/blob/master/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/photo/selector.jpeg"/></div><br>
+
 
 # QA
 ### ChannelFuture是Future和回调的结合，能够避免我们手动去查询结果是否完成，那么ChannelFuture是什么时候知道该调用监听器的回调方法的呢？
