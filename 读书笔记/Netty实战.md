@@ -129,10 +129,13 @@ Netty的ByteBuf用于替代JDK的ByteBuffer，是Netty的数据容器。
 * 8.支持池化 ？
 
 ##### ByteBuf的工作方式
-维护两个不同的索引，一个用于读取，一个用于写入
+维护两个不同的索引，一个用于读取，一个用于写入。写入的时候writeIndex会递增，读取的时候readIndex会递增追赶writeIndex，当他们俩相等时，则说明ByteBuf中已无未读取的内容。
+ByteBuf就是由两个索引分别控制读和写位置的字节数组。
 
+######ByteBuf的
 
 
 
 # QA
 ### ChannelFuture是Future和回调的结合，能够避免我们手动去查询结果是否完成，那么ChannelFuture是什么时候知道该调用监听器的回调方法的呢？
+猜想：异步执行完成，将结果set进属性里面的时候调用监听器的回调方法
