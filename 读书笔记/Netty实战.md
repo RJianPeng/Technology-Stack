@@ -130,10 +130,23 @@ Netty的ByteBuf用于替代JDK的ByteBuffer，是Netty的数据容器。
 
 ##### ByteBuf的工作方式
 维护两个不同的索引，一个用于读取，一个用于写入。写入的时候writeIndex会递增，读取的时候readIndex会递增追赶writeIndex，当他们俩相等时，则说明ByteBuf中已无未读取的内容。
-ByteBuf就是由两个索引分别控制读和写位置的字节数组。
+ByteBuf就是由两个索引分别控制读和写位置的字节数组。这两个索引的推进需要调用readerIndex（index）或writeIndex（index） TODO：这个地方需要demo看看实际推进情况 顺便看看ByteBuf空间整理的底层代码
 
-######ByteBuf的
+###### ByteBuf的使用模式
+* 1.堆缓冲区：将数据存储在堆空间中，这种方式能够提供快速的分配和释放。
 
+* 2.直接缓冲区：直接缓冲区的内容会被驻留在常规的会被垃圾回收的堆空间之外。
+
+* 3.复合缓冲区：提供了一个将多个缓冲区合并成单个缓冲区的虚拟表示。CompositeByteBuf
+
+#### 派生缓冲区
+* duplicate()
+* slice()
+* slice(int,int)
+* Unpooled.unmodifiableBuffer()
+* order(ByteOrder)
+* readSlice(int)
+这些方法都将返回一个新的ByteBuf实例，它具有自己的读索引、写索引、和标记索引，返回的ByteBuf和源实例是共享的。
 
 
 # QA
