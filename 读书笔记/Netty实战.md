@@ -148,6 +148,22 @@ ByteBuf就是由两个索引分别控制读和写位置的字节数组。这两�
 * readSlice(int)
 这些方法都将返回一个新的ByteBuf实例，它具有自己的读索引、写索引、和标记索引，返回的ByteBuf和源实例是共享的。
 
+ByteBuf有两种类别的读写操作：
+* 1.get()和set()方法，从给定的索引开始，而且保持索引不变。
+* 2.read()和write()方法，从给定的索引开始，并且会根据已经访问过的字节数对索引进行调整。
+
+
+### ByteBuf分配
+#### 按需分配：ByteBufAllocator接口
+为了降低分配和释放内存的开销，Netty通过interface ByteBufAllocator实现了ByteBuf的池化（应该是类似于string常量池的东西），它可以用来分配我们所描述过的任意类型的ByteBuf实例。可以通过CHannel或者ChannelHandlerContext的alloc()方法获取一个ByteBufAllocator的引用。
+
+Netty有两种ByteBufAllocator的实现：PooledByteBufAllocator和UnpooledByteBufAllocator，前者支持池化，后者不支持池化（这一点也和string的常量池很像）
+
+#### 引用计数
+Netty还实现了ByteBuf和ByteBufHolder的引用计数，它们都实现了ReferenceCounted接口。当引用计数为0时，即释放该实例资源。对池化来说很重要，降低了开销。
+
+
+
 
 # QA
 ### ChannelFuture是Future和回调的结合，能够避免我们手动去查询结果是否完成，那么ChannelFuture是什么时候知道该调用监听器的回调方法的呢？
