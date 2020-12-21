@@ -3,6 +3,7 @@
 * -[第三章、Netty的组件和设计](#第三章Netty的组件和设计)
 * -[第四章、传输](#第四章传输)
 * -[第五章、ByteBuf](#第五章ByteBuf)
+* -[第六章、ChannelHandler和ChannelPipeline](#第六章ChannelHandler和ChannelPipeline)
 
 # 第一章、Netty——异步和事件驱动
 
@@ -125,8 +126,8 @@ Netty的ByteBuf用于替代JDK的ByteBuffer，是Netty的数据容器。
 * 4.读写模式不用切换（ByteBuffer的flip方法）
 * 5.读和写使用了不同的索引（读写时字符的起始位置）
 * 6.支持方法的链式调用 ？
-* 7.支持引用计数 ？
-* 8.支持池化 ？
+* 7.支持引用计数 
+* 8.支持池化 
 
 ##### ByteBuf的工作方式
 维护两个不同的索引，一个用于读取，一个用于写入。写入的时候writeIndex会递增，读取的时候readIndex会递增追赶writeIndex，当他们俩相等时，则说明ByteBuf中已无未读取的内容。
@@ -162,8 +163,28 @@ Netty有两种ByteBufAllocator的实现：PooledByteBufAllocator和UnpooledByteB
 #### 引用计数
 Netty还实现了ByteBuf和ByteBufHolder的引用计数，它们都实现了ReferenceCounted接口。当引用计数为0时，即释放该实例资源。对池化来说很重要，降低了开销。
 
+# 第六章、ChannelHandler和ChannelPipeline
+Channel的四个状态：
+* 1.ChannelUnregistered：Channel已经创建，但还未注册到EventLoop
+* 2.ChannelRegistered：Channel已经被注册到了EventLoop
+* 3.ChannelActive：Channel处于活动状态，现在可以接收和发送数据了
+* 4.ChannelInactive：Channel没有连接到远程节点
 
+这些状态改变的时候，会生成对应的事件，并调用ChannelInboundHandler对应的回调方法。
 
+状态周期流转：2->3->4->1（校验方式，继承并实现一个ChannelInboundHandler的channelActive，channelRead，channelRegistered和channelUnregistered方法，通过日志查看调用顺序）
+
+ChannelHandler的生命周期方法：
+* 1.handlerAdded 把ChannelHandler添加到ChannelPipeline中时被调用
+* 2.handlerRemoved 把ChannelHandler从ChannelPipelin中移除时调用
+* 3.exceptionCaught 处理过程中出现错误调用
+
+Netty有两个重要的ChannelHandler子接口：
+* 1.ChannelInboundHandler 处理入站数据及各种状态变化
+
+* 2.ChannelOutboundHandler 处理出站数据并且允许拦截所有的操作。它的方法将被CHannel、CHannelPipeline以及ChannelHandlerContext调用。它的大部分方法中都有个ChannelPromise参数，以便在操作完成时通过调用它的setSuccess和setFailure方法从而使ChannelFuture不可变。
+
+Netty提供了class ResourceLeakDetector帮助你诊断潜在的资源泄漏问题。
 
 # QA
 ### ChannelFuture是Future和回调的结合，能够避免我们手动去查询结果是否完成，那么ChannelFuture是什么时候知道该调用监听器的回调方法的呢？
