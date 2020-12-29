@@ -186,6 +186,13 @@ Netty有两个重要的ChannelHandler子接口：
 
 Netty提供了class ResourceLeakDetector帮助你诊断潜在的资源泄漏问题。
 
+#### ChannelHandlerContext接口
+这个接口的主要功能是管理它所关联的ChannelHandler和在同一个ChannelPipeline中的其他ChannelHandler之间的交互。
+
+有ChannelHandler加入到ChannelPipeline中时就会创建ChannelHandlerContext，ChannelHandlerContext和ChannelHandler的绑定关系时不变的。
+
+
+
 # QA
 ### ChannelFuture是Future和回调的结合，能够避免我们手动去查询结果是否完成，那么ChannelFuture是什么时候知道该调用监听器的回调方法的呢？
 猜想：异步执行完成，将结果set进属性里面的时候调用监听器的回调方法
