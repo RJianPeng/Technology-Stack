@@ -191,7 +191,7 @@ Netty提供了class ResourceLeakDetector帮助你诊断潜在的资源泄漏问�
 
 有ChannelHandler加入到ChannelPipeline中时就会创建ChannelHandlerContext，ChannelHandlerContext和ChannelHandler的绑定关系时不变的。
 
-
+### ChannelHandlerContext
 
 # QA
 ### ChannelFuture是Future和回调的结合，能够避免我们手动去查询结果是否完成，那么ChannelFuture是什么时候知道该调用监听器的回调方法的呢？
