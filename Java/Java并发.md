@@ -127,7 +127,7 @@ synchronized底层对对象锁的使用：
 * CachedThreadPool：一个任务创建一个线程；核心线程数为0，最大线程数是int的最大值。他的队列是synchronousQueue,没有缓冲区域的队列，最大线程数为int的最大值，线程没有任务时会持续60秒
 * FixedThreadPool：所有任务只能使用固定大小的线程；核心线程数和最大线程数相同
 * SingleThreadExecutor：相当于大小为 1 的 FixedThreadPool;核心线程数和最大线程数都为1
-* ScheduledThreadPool:核心线程数不定，最大线程数为int的最大值，线程空闲存活时间为0
+* ScheduledThreadPool:核心线程数不定，最大线程数为int的最大值，线程空闲存活时间为0。可以使用延时，固定周期的任务调度
 
 除了直接通过Executors的静态工厂方法直接生成以上四种常见的线程池之外，开发人员还可以通过ThreadPoolExecutor的构造方法来定义自己的线程池。
 //TODO源码解读
