@@ -174,6 +174,9 @@ public ThreadPoolExecutor(int corePoolSize,
 与HashMap类似，但是采用了分段锁，每一段锁控制几个桶，一个ConcurrentHashMap的多个段可以被多个线程同时访问,分段锁（Segment）继承于ReentrantLock
 java8里面改用volatile和CAS实现线程安全
 
+## ConcurrentLinkedQueue
+底层使用的volatile+CAS实现的线程安全的链表
+
 ## CopyOnWriteArrayList
 读写分离的数组，写操作通过ReentranLock加锁,写操作是复制一个新的数组进行写操作，结束之后将旧的数组指向新的数组，在写操作的时候允许读操作
 
