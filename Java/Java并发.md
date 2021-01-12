@@ -123,7 +123,7 @@ synchronized底层对对象锁的使用：
 # Java线程池
 功用：帮助程序员管理线程
 
-常见的四种线程池：
+常见的四种线程池（以下四种线程池本质都是设置了特殊参数的ExecutorService)：
 * CachedThreadPool：一个任务创建一个线程；核心线程数为0，最大线程数是int的最大值。他的队列是synchronousQueue,没有缓冲区域的队列，最大线程数为int的最大值，线程没有任务时会持续60秒
 * FixedThreadPool：所有任务只能使用固定大小的线程；核心线程数和最大线程数相同
 * SingleThreadExecutor：相当于大小为 1 的 FixedThreadPool;核心线程数和最大线程数都为1
