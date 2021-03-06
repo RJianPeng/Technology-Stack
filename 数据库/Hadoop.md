@@ -10,10 +10,12 @@
   - [操作指令使用进阶](#操作指令使用进阶)
   - [关于数据倾斜的故事](#关于数据倾斜的故事)
   - [踩坑日记](#踩坑日记)
-
 - [YARN](#yarn)
 
 - [Tez](#tez)
+
+
+- [待整理](#待整理)
 # Hbase
 
 ## 概念
@@ -65,6 +67,9 @@ HBase的Write Ahead Log (WAL)提供了一种高并发、持久化的日志保存
 WAL最重要的作用是灾难恢复。和MySQL 的BIN log类似，它记录所有的数据改动。一旦服务器崩溃，通过重放log，我们可以恢复崩溃之前的数据。这也意味如果写入WAL失败，整个操作将认为失败。
 
 HLog是实现WAL的类。一个HRegionServer对应一个HLog实例，这样主要是如果一个region对应一个HLog，会需要并发写入大量的文件。HLog内部通过AtomicLong保证线程安全。
+
+### hbase的blockcache
+详解：https://www.jianshu.com/p/64512e706548
 
 ## 应用
 ### rowkey的设计原则
@@ -434,6 +439,246 @@ Yarn是Hadoop集群的资源管理系统。它主要包括两部分功能：
 Yarn的另一个目标就是拓展Hadoop，使得它不仅仅可以支持MapReduce计算，还能很方便的管理诸如Hive、Hbase、Pig、Spark/Shark等应用。这种新的架构设计能够使得各种类型的应用运行在Hadoop上面，并通过Yarn从系统层面进行统一的管理，也就是说，有了Yarn，各种应用就可以互不干扰的运行在同一个Hadoop系统中，共享整个集群资源。
 
 （详解可见https://blog.csdn.net/suifeng3051/article/details/49486927）
+
+
+
+# 零碎知识
+## hive
+
+### sort_array函数：
+对数组进行排序，可以用于collect_list/collect_set的有序性保证 感觉比distribute by sort by 好用
+小坑：array里面必须是基本属性，不能是array/map/struct的复杂属性 
+null不会进collect_list()
+
+
+### PERCENTILE方法整理：
+PERCENTILE（col,P）
+percentile_approx(col, p)
+percentile_approx(col, p，B)
+P支持作为一个数组 一次提取多个分位数
+B控制内存消耗的近似精度 B值越大数据越精确 默认为10000 出现高分位数异常（0.7,0.8,0.9相同时），可以调大B值
+percentile的col只支持int类型
+percentile_approx的col数值类似型都可
+
+### lead和lag函数
+lag与lead函数是跟偏移量相关的两个分析函数，通过这两个函数可以在一次查询中取出同一字段的前面第N行的数据(lag)和后面第N行的数据(lead)作为独立的列,从而更方便地进行进行数据过滤。
+lead/lag(字段,N,默认值)
+
+### UNION LIMIT踩坑：
+select 
+XXXX
+union 
+select 
+XXXX
+limit n
+n 为union之后的限制数量，只能在union的最后一个查询后加，在union前面的部分加会报错，需要对前面的查询限制可以用个子查询套起来
+
+
+### ratio_to_report
+ratio_to_report(score) over(partition by kemu)
+即该行score/所在的根据kemu分出来的组的score的和
+
+
+
+### 正则表达相关函数 
+https://blog.csdn.net/Kikitious_Du/article/details/91441639
+
+做小时级的diff表的时候要考虑到0点的前一个小时为前一天 天数也要做P1H
+
+数据量的diff分析 先看改了啥 再看这个被修改的部分的相关逻辑进行分析，不要上来直接过全局分析。
+
+regexp_extract(string subject,  string pattern,  int index) 返回subject中能匹配到pattern的第index个段落
+
+
+
+### hive为啥2063 = '2063' 字符串和整数比了数值大小而不是字典大小
+hive在做比对的时候会做隐式的类型转换 最好在比对之前类型转换成一致的，避免出现精度丢失的问题
+
+### hive 保留小数位的方式
+1.round(double,int) int为小数点后几位
+2.cast(double as decimal(20,2)) 保留两位 （decimal 128bit 不存在精度损失）
+
+### hive和MySQL对子查询的支持：
+where字句中，hive和MySQL都支持in的子查询，但是hive不支持where直接子查询，MySQL支持where后面直接子查询跟筛选条件
+
+### percent_rank：(分组内当前行的rank值-1)/(分组内总行数-1)
+
+cume_dist：求小于(或大于，看排序)等于当前值的行数,即求排序后改行前面包括改行的行数/分组内总行数
+```
+select dept, userid, sal,
+cume_dist() over(order by sal) as cume1
+from cookie3;
+```
+https://www.jianshu.com/p/a836016219c4
+
+
+### datediff 
+参数一减去参数二 可能出现负数 不满一天时不保留小时级差异
+
+### LATERAL VIEW explode 
+后面加map时，产出的参数有两个：key和value
+
+
+
+### UDF何时实例化
+对于一个HIveSql任务，可以是MR任务，也可以是Tez任务，实例化UDF的个数取决于本身task的数量，也就是进程的数量。同时也取决于UDF的使用次数。task数记为n，一个SQL中UDF使用了m次，那么实例化个数为n*m。
+
+
+### left semi join
+
+### 大表join大表
+set hive.optimize.skewjoin = true;
+
+set hive.skewjoin.key = skew_key_threshold(默认为100000 可以就按官方默认的1个reduce 只处理1G 的算法，那么skew_key_threshold= 1G/平均行长.或者默认直接设成250000000 (差不多算平均行长4个字节))
+100000这里指的是条数
+
+其原理把这种倾斜的特殊值先不在reduce端计算掉，而是先写入hdfs，然后启动一轮map join专门做这个特殊值的计算，期望能提高计算这部分值的处理速度。当然你要告诉hive这个join是个skew join
+
+
+### 大表join小表
+set hive.auto.convert.join = true;
+set hive.auto.convert.join.noconditionaltask.size = 800000000;
+
+set hive.mapjoin.smalltable.filesize=25000000  //小文件定义 这样hive可以自动分辨出哪个是小文件 并放到内存中，小表放在join前后都可
+
+
+hive决定是否使用mapjoin应该是根据需要扫描的数据量来决定 而不是具体处理之后的数据量
+
+
+### 配置计算引擎
+set hive.execution.engine=mr;
+
+
+### 分桶表
+如何创建带桶的表：
+ create table bucketed_user(id int,name string) clustered by (id) sorted by(name) into 4 buckets
+
+
+SMB join
+参数设置
+set hive.auto.convert.sortmerge.join=true;
+set hive.optimize.bucketmapjoin = true;
+set hive.optimize.bucketmapjoin.sortedmerge = true;
+
+
+
+### 查看表信息
+方法1：查看表的字段信息
+
+desc table_name;
+
+方法2：查看表的字段信息及元数据存储路径
+
+desc extended table_name;
+
+方法3：查看表的字段信息及元数据存储路径
+
+desc formatted table_name;
+
+
+lateral view explode(array())
+lateral view outer exploce(array())
+默认array为空，数据会被过滤掉，加了outer后不会过滤
+
+### hive实现数据抽样方式
+https://blog.csdn.net/zylove2010/article/details/78290319
+
+### join key注意 写错容易导致造成意料之外的后果，比如笛卡尔积啥的
+
+### map数量配置
+SET tez.grouping.min-size = 256000000;
+SET tez.grouping.max-size = 256000000;
+
+
+###  reducer数量
+set hive.exec.reducers.bytes.per.reducer 单个reducer处理的最大数据量
+hive.exec.reducers.max   reducer的最大数量
+
+### 链路改造复盘
+set hive.auto.convert.join = true; 
+set hive.auto.convert.join.noconditionaltask.size = 800000000;
+搭配使用mapjoin的机制 对于处理大表非常好用
+对于大表join大表出现数据倾斜的情况，可以通过抽样计数的方式计算出热点数据（倾斜数据），对这部分热点数据用map join处理，另外的数据用common join处理（即skew join的手动实现）
+
+
+mapjoin的时候，可能出现map数量太少而导致耗时较长的情况，可以设置map处理数据的大小来调整map的数量，单个map处理数据较少整体耗时更少。
+SET tez.grouping.min-size = 256000000;
+SET tez.grouping.max-size = 256000000;
+
+
+join的时候注意key别写错了 会导致意料之外的结果且不好检查出来
+
+### tez容器
+set hive.tez.container.size
+设置容器大小 单位为M
+
+### map相关常见的内嵌函数
+size(map) map的数量
+map_values 获取map里所有的value 返回array类型
+map_keys 获取map里所有的key 返回array类型
+
+brickhouse方法：
+map_filter_keys(map,array) 过滤map 
+
+### spark和tez
+spark对资源更敏感，支持多种运行模式 tez对资源相对不敏感，只能运行在yarn上面
+
+
+### 取整函数
+round 四舍五入 第二个参数为保留小数点后的位数
+floor 取左值（去尾）
+ceil 取右值（进一）
+
+
+## hbase
+
+hbase详解   感觉阔以
+https://zhuanlan.zhihu.com/p/265480567
+### 部分指标含义
+tps：Transactions Per Second，一般在事务系统之中，在mysql可以用tps
+qps：Queries Per Second，一般就是访问次数
+ops：Operates Per Second，一般是操作次数，与qps区别不大
+
+### 数据写入
+大量数据写入可以使用bulkload方式写入，通过mr程序生产hfile文件，直接用bulkload导入生成的hfile文件，速度非常快。
+但是这种方式对数据的写入操作不会计入WAL日志 副本没法同步和恢复
+
+EXPLAIN [EXTENDED|DEPENDENCY|AUTHORIZATION] query
+
+
+
+# Hadoop指令
+hadoop fs -du 文件路径
+输出文件大小 单位为B
+
+hadoop fs -du -h 文件路径
+输出文件大小 单位为最大的
+
+hadoop fs -du -h -s 该文件路径下所有文件大小之和
+
+
+### presto搜索引擎
+http://blog.chinaunix.net/uid-31012107-id-5819785.html
+
+
+## MySQL
+分区表的声明方式（和hive的有点不同）
+
+LONGVARCHAR类型 对应Java中的String
+
+
+# Java
+fasterxml.jackson.databind.ObjectMapper可以解析json字符串，需要注意解析字符串为Date类型的时候，可以通过setDateFormat设置解析时间的格式 否则默认为yyyy-MM-dd
+
+
+dubbo接口无流量也要慎重 其他服务可能依然有依赖
+
+dubbo异步调用https://www.cnblogs.com/java-zhao/p/8424019.html
+
+
+
+# ES
+数据类型 可见https://www.cnblogs.com/shoufeng/p/10692113.html
 
 
 

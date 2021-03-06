@@ -191,6 +191,10 @@ Netty提供了class ResourceLeakDetector帮助你诊断潜在的资源泄漏问�
 
 有ChannelHandler加入到ChannelPipeline中时就会创建ChannelHandlerContext，ChannelHandlerContext和ChannelHandler的绑定关系时不变的。
 
+### ChannelHandlerContext
+代表了ChannelHandler和ChannelPipeline的关联，每当有ChannelHandler添加到ChannelPipeline中时，都会创建ChannelHandlerContext。
+
+Channel和ChannelHandler中也有些Context的相同方法，调用Context的方法是从当前ChannelHandler开始传播，调用Channel和ChannelHandler的方法 是从整个ChannelPipeline开始传播。
 
 
 # QA

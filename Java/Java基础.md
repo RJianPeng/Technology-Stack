@@ -40,6 +40,8 @@
 
 * [十二、Java常见类](十二java常见类)
 
+* [十三、反射](反射)
+
 
 # 一、字符串
 ## String
@@ -540,6 +542,13 @@ ThreadLocal的原理就是在Thread中有一个ThreadLocalMap，里面存的valu
 为特定瞬间与一组诸如 YEAR、MONTH、DAY_OF_MONTH、HOUR 等日历字段之间的转换提供了一些方法
 （懒得写了嘿嘿） 详见https://blog.csdn.net/ytasdfg/article/details/81086118
 
+
+## DateTimeFormatter
+使用新的LocalDateTime或ZonedLocalDateTime时，我们要进行格式化显示，就要使用DateTimeFormatter。
+相比于SimpleDataFormat,DateTimeFormatter是线程安全的，不可变的。SimpleDataFormat线程不安全是因为在format函数中，Date转String时使用了他的成员变量Calendar来处理时间，多线程的情况下会出现脏数据问题。
+
+
+# 十三、反射
 
 
 

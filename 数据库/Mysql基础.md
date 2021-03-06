@@ -147,6 +147,9 @@ insert into table test(id,name) values(1,'github') on duplicate key update name 
 * key_len：mysql使用的索引长度
 * rows：查询时便利的行数
 
+# 基础操作
+## 修改字段名称和属性
+alter table {table_name} change old_column new_column …
 
 
 
