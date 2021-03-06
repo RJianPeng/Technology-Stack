@@ -123,11 +123,11 @@ synchronized底层对对象锁的使用：
 # Java线程池
 功用：帮助程序员管理线程
 
-常见的四种线程池：
+常见的四种线程池（以下四种线程池本质都是设置了特殊参数的ExecutorService)：
 * CachedThreadPool：一个任务创建一个线程；核心线程数为0，最大线程数是int的最大值。他的队列是synchronousQueue,没有缓冲区域的队列，最大线程数为int的最大值，线程没有任务时会持续60秒
 * FixedThreadPool：所有任务只能使用固定大小的线程；核心线程数和最大线程数相同
 * SingleThreadExecutor：相当于大小为 1 的 FixedThreadPool;核心线程数和最大线程数都为1
-* ScheduledThreadPool:核心线程数不定，最大线程数为int的最大值，线程空闲存活时间为0
+* ScheduledThreadPool:核心线程数不定，最大线程数为int的最大值，线程空闲存活时间为0。可以使用延时，固定周期的任务调度
 
 除了直接通过Executors的静态工厂方法直接生成以上四种常见的线程池之外，开发人员还可以通过ThreadPoolExecutor的构造方法来定义自己的线程池。
 //TODO源码解读
@@ -173,6 +173,9 @@ public ThreadPoolExecutor(int corePoolSize,
 ## ConcurrentHashMap
 与HashMap类似，但是采用了分段锁，每一段锁控制几个桶，一个ConcurrentHashMap的多个段可以被多个线程同时访问,分段锁（Segment）继承于ReentrantLock
 java8里面改用volatile和CAS实现线程安全
+
+## ConcurrentLinkedQueue
+底层使用的volatile+CAS实现的线程安全的链表
 
 ## CopyOnWriteArrayList
 读写分离的数组，写操作通过ReentranLock加锁,写操作是复制一个新的数组进行写操作，结束之后将旧的数组指向新的数组，在写操作的时候允许读操作

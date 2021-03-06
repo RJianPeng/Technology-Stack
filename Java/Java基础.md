@@ -190,6 +190,8 @@ wait方法：让该对象所属的线程进入睡眠状态并释放锁，直到�
 ### protected
 用该关键字修饰的类的成员和方法在同一个包下的类以及这个类的子类可以访问
 
+### transient
+Java中的类实现了Serializable接口就可以序列化，但是被transient修饰的属性不能被序列化。
 
 
 ## final
