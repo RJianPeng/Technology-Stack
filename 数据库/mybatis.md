@@ -1,5 +1,11 @@
+- [基础操作](#基础操作)
+
+- [小进阶](#小进阶)
+
 # 基础操作
 ## 批量插入数据
+
+
 批量插入数据总共有三种方式：一种是循环整个sql，一种是利用mysql的case when进行批量更新，还有一种是on duplicate key update进行批量更新
 
 * 1.循环整个sql
@@ -82,6 +88,12 @@
 ```
 
 
+# 小进阶
+## 一个Spring项目如何同时使用多个数据源
+在数据源的配置类上使用@MapperScan注解，里面声明使用该数据源的Mapper接口的包名和其中一种数据源的SqlSessionFactory，则创建Mapper接口的bean时，
+会使用声明的SqlSessionFactory进行创建，此时就明确了使用的数据源。
+具体可见：https://www.jianshu.com/p/735852145580
+//TODO 熟悉mybatis的执行流程
 
 
 
