@@ -1,4 +1,5 @@
 * [Bean](#bean)
+* [常见注解](#常见注解)
 
 # Bean
 Bean有两个最常见的属性，即id和name，两个属性都是起到标识实例的作用，推荐使用id。
@@ -17,3 +18,17 @@ org.springframework.beans.factory.NoSuchBeanDefinitionException: No bean named '
 
 
 上面既然多次提到了getBean()方法，那这里讲一下这个方法的用法 //TODO
+
+
+# 常见注解
+### @ConditionalOnBean
+仅仅在当前上下文中存在某个对象时，才会实例化一个bean
+
+### @ConditionalOnClass
+当某个class位于类路径上，才会实例化一个bean
+
+### @ConditionalOnExpression
+当表达式为true的时候，才会实例化一个bean
+
+### @ConditionalOnMissingBean
+在当前上下文中不存在某个bean时，才会实例化一个Bean

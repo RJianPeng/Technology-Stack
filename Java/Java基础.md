@@ -551,7 +551,51 @@ ThreadLocal的原理就是在Thread中有一个ThreadLocalMap，里面存的valu
 
 
 # 十三、反射
+反射是框架设计的灵魂，Java反射机制是在运行状态中，对于任意一个类，都能够知道/调用这个类的所有属性和方法，动态获取及调用对象的方法的功能叫做反射机制。
+```
+//class对象的获取
+Object.getClass();//Object九大通用方法之一
+Class.forName(String className);//Class的静态方法，常用
 
+
+//通过class对象获取类的构造方法
+Constructor[] getConstructors()//获取所有的公有的构造方法
+Constructor[] getDeclaredConstructors()//获取所有的构造方法
+
+Constructor getConstructor(Class...parameterTypes);//获取单个公有构造方法
+Constructor getDeclaredConstructor(Class...parameterTypes);//获取单个构造方法
+
+//构造方法的调用
+constructor.newInstance(Object...initargs)
+
+//成员变量的获取和调用
+Field[] getFields()//获取所有的公有字段
+Field[] getDeclaredFields()//获取所有的字段
+Field getField(String fieldName);//获取某个公有字段
+Field getDeclaredField(String fieldName);//获取某个字段
+
+field.set(Object obj,Object value)//obj为要设置的字段所在对象 value为字段的值
+
+//成员方法的获取和调用
+Method[] getMethods()//获取所有的公有方法
+Method[] getDeclaredMethods//获取所有的成员方法，不包括继承的
+Method getMethod(String name,Class<?>... parameterTypes);//获取单个公有方法，name：方法名，parameterTypes：参数
+Method getDeclaredMethod(String name,Class<?>... parameterTypes)//获取单个方法，name：方法名，parameterTypes：参数
+
+method.invoke(Object obj,Object...args)//方法的调用 obj：方法所在对象 args：参数 静态方法obj为null
+```
+
+反射的其他用法：
+##### 通过反射越过泛型检查
+泛型用在编译期，编译过后泛型擦除，所以可以通过反射越过泛型检查的。
+```
+//通过反射在List<String>中插入一个Integer
+List<String> list = Arrays.asList("a","b");
+
+Class listClass = list.getClass();
+Method m = listClass.getMethod("add",Object.class);
+m.invoke(list,100);
+```
 
 
 

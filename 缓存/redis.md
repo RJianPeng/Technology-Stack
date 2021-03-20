@@ -18,6 +18,7 @@
 * [八、Redis的发布订阅](#redis的发布订阅)
 * [九、pipeline](#pipeline)
 * [十、cluster](#cluster)
+* [十一、jedis](#jedis)
 
 
 
@@ -186,7 +187,7 @@ ttl key 查看key所剩的时间 返回为正数为剩余时间 -1为无过期�
 type key 查看key的类型
 
 ### 一些特殊操作
-SETNX key value 若key不存在时成功返回 否则失败返回0
+SETNX key value 若key不存在时成功返回 否则失败返回0 可用于分布式加锁
 
 SETEX key seconds value  设置key value对，且定义过期时间，如果key已存在则覆盖value。
 
@@ -215,7 +216,7 @@ discard：回滚
 
 在指定的时间间隔内，将数据库的快照写入磁盘。
 
-优势：1.redis数据库只有一个文件，方便备份。 
+优势： 1.redis数据库只有一个文件，方便备份。 
 
      2.对于灾难恢复而言，能轻松的把文件转移。
      
@@ -233,7 +234,7 @@ fork和cow。fork是指redis通过创建子进程来进行RDB操作，cow指的�
 
 优势：
      * 1.这种机制有更高的数据安全性
-     * 2.采用append模式写日志  写入的时候出现宕机不会破坏已经写入的数据  写了一半崩溃，下次启动redis的时候通过redis-check-aof工具解决数据一致性的问题
+     * 2.采C aa用append模式写日志  写入的时候出现宕机不会破坏已经写入的数据  写了一半崩溃，下次启动redis的时候通过redis-check-aof工具解决数据一致性的问题
      * 3.日志过大，redis自动启动重写机制。redis还会创建一个新的日志，记录重写期间的数据操作，保证重写期间的数据操作不会丢失。
      * 4.日志文件清晰，可以通过这个文件实现数据的重建
      
@@ -466,7 +467,15 @@ Redis Cluster 把所有的数据划分为16384个不同的槽位，可以根据�
 <div align="center"> <img src="https://github.com/RJianPeng/Technology-Stack/blob/master/%E7%BC%93%E5%AD%98/photo/rediscluster.png"/></div><br>
 
 
+# jedis
 
+## set
+* jedis.set(String key,String value,String nxxx,String expx,long time)
+参数含义：
+key:key值
+value:value值
+nxxx: NX|XX,NX-当该key不存在时才能set XX-当key存在时才能set
+expx:EX|PX 键值对的过期时间单位，ex：秒  px：毫秒
 
 
 
