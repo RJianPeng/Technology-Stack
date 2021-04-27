@@ -28,7 +28,8 @@
         </foreach>
     </update>
 ```
-注意这种方法执行的时候如果传入的是个空的数组 会卡在这里（陷入死循环？）
+注意这种方法执行的时候如果传入的是个空的数组 会卡在这里（陷入死循环？）。
+另外这种方式还需要jdbc连接参数里配置allowMultiQueries=true。
 
 
 * 2.case when的方式更新
@@ -64,6 +65,8 @@
         </foreach>
     </update>
 ```
+这种方式是通过拼接case when语句来实现更新。
+这种方式需要在最后加where条件，否则会对所有的数据进行case when的判定和更新
 
 
 * 3.on duplicate key update方式更新（不支持第三种方式，有可能会造成数据丢失和主从上表的自增id值不一致)

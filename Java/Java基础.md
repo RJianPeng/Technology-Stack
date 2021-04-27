@@ -549,6 +549,18 @@ ThreadLocal的原理就是在Thread中有一个ThreadLocalMap，里面存的valu
 使用新的LocalDateTime或ZonedLocalDateTime时，我们要进行格式化显示，就要使用DateTimeFormatter。
 相比于SimpleDataFormat,DateTimeFormatter是线程安全的，不可变的。SimpleDataFormat线程不安全是因为在format函数中，Date转String时使用了他的成员变量Calendar来处理时间，多线程的情况下会出现脏数据问题。
 
+## ObjectMapper
+fasterxml.jackson.databind.ObjectMapper,json和其他各种格式的转换工具类。
+```
+//常见配置
+objectMapper..configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); //设置当json字符串属性比对象属性多的时候不报错
+objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")); //设置时间格式 默认为yyyy-MM-dd
+objectMapper.enable(SerializationFeature.INDENT_OUTPUT);//转换为格式化的json
+```
+
+
+
+
 
 # 十三、反射
 反射是框架设计的灵魂，Java反射机制是在运行状态中，对于任意一个类，都能够知道/调用这个类的所有属性和方法，动态获取及调用对象的方法的功能叫做反射机制。
@@ -597,7 +609,20 @@ Method m = listClass.getMethod("add",Object.class);
 m.invoke(list,100);
 ```
 
+# 开发注意事项（阿里规约）
+* 当 switch 括号内的变量类型为 String 并且此变量为外部参数时，必须先进行 null判断，否则进不去任何分支。
 
+* 三目运算符 condition? 表达式 1 : 表达式 2 中，高度注意表达式 1 和 2 在类型对齐时，可能抛出因自动拆箱导致的 NPE 异常。
+```
+    Integer a = 1;
+    Integer b = 2;
+    Integer c = null;
+    Boolean flag = false;
+    // a*b 的结果是 int 类型，那么 c 会强制拆箱成 int 类型，抛出 NPE 异常
+    Integer result=(flag? a*b : c);
+```
+
+* 在高并发场景中，避免使用”等于”判断作为中断或退出的条件。
 
 
 

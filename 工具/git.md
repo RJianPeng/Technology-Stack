@@ -29,3 +29,17 @@ git提交时需要设置一个帅气的名字如何操作
 
 ## 在分支间转移commit
 cherry-pick commit_hash 将某个提交转移到当前分支 作为一个新的提交
+
+## 存储变更
+git stash save 将当前未commit的变更保存到一个堆中，可以在合适的地方通过git stash pop释放到当前代码中，
+释放顺序默认为堆，先进后出，可以通过命令指定
+```
+//常见的相关指令
+git stash save "message"//存储当前变更并备注
+git stash list//查看当前存储了哪些变更
+git stash show//查看某次存储做了哪些变更，默认为最新放进去的存储，可以指定
+git stash apply//应用某次存储，不删除，可以指定
+git stash pop//应用某次存储，删除，可以指定
+git stash drop//删除某次存储，不应用，可以指定
+git stash clear//清空当前堆中的存储
+```

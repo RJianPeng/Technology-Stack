@@ -11,6 +11,9 @@
 ### ArrayList
 ArrayList：基于动态数组实现，支持随机访问。扩容的时候是变成原来的1.5倍，创建一个新的数组
 
+Arrays.asList()返回值为Arrays的一个内部类，不同于常用的new ArrayList<>()类型，某些场景需要转换一把
+
+
 ### LinkedList
 LinkedList：和ArrayList一样支持动态扩展，基于双向链表实现；
 

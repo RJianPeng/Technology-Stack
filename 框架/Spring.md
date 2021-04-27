@@ -32,3 +32,73 @@ org.springframework.beans.factory.NoSuchBeanDefinitionException: No bean named '
 
 ### @ConditionalOnMissingBean
 在当前上下文中不存在某个bean时，才会实例化一个Bean
+
+## spring切面相关
+(参考文档：https://blog.csdn.net/w_linux/article/details/80230222)
+### @Pointcut 
+声明切点
+```
+JoinPoint相关方法： 
+
+//获取封装了方法签名信息的对象，在该对象中可以获取到目标方法名，所属类的Class信息等
+Signature getSignature();
+
+//获取传入目标方法的参数对象
+Object[] getArgs();
+
+//获取被代理的对象
+Object getTarget();
+
+//获取代理对象
+Object getThis();
+```
+
+ProceedingJoinPoint对象，是JoinPoint的子接口，该对象用在@Around的切面方法中
+```
+ProceedingJoinPoint常用方法：
+
+//执行目标方法
+Object proceed() throws Throwable
+
+//传入的新的参数去执行目标方法
+Object proceed(Object[] var1) throws Throwable
+```
+
+### @Before
+前置通知，在方法执行之前执行，里面的参数可以是声明的切点，或者直接是切点指定的内容从而跳过切点的声明
+
+### @After
+后置通知，方法执行之后执行（不管是否发生异常）
+
+### @AfterReturning
+返回通知，方法正常执行完毕后执行
+
+### @AfterThrowing 
+异常通知，在方法抛出异常之后执行
+
+### @Around
+环绕通知，包裹了切点方法的整个执行周期
+
+# 拦截器
+## HandlerInterceptor
+```
+public interface HandlerInterceptor {
+    //在业务处理器处理请求之前被调用
+	boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+			throws Exception;
+
+    //TODO 可以测一下
+	//在业务处理器处请求执行完成后，返回之前处理
+	void postHandle(
+			HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView)
+			throws Exception;
+
+	//DispatcherServlet完全处理完请求后被调用，可以用于资源清理等
+	void afterCompletion(
+			HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
+			throws Exception;
+
+}
+``` 
+
+## ResponseBodyAdvice
