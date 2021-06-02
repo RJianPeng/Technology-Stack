@@ -160,7 +160,7 @@ https://www.jianshu.com/p/3419550152d5
 
 ## SQL指令进阶
 
-### MYSQL如何实现row_number()over()函数 即分组排序
+### MYSQL如何实现row_number() over()函数 即分组排序
 https://www.jianshu.com/p/3419550152d5
 
 
@@ -171,6 +171,8 @@ https://www.jianshu.com/p/3419550152d5
 
 游标的生命周期：声明游标（Declare cursorname Cursor）—>打开游标（Open Cursorname）—>读取数据（Fetch.........From）—>关闭游标（Close Cursorname）—>删除游标（Deallocate Cursorname）
 
+### select fro update
+查询某条数据，并给这条数据加锁，后期可以用于更新；一般情况可以使用分布式锁替换这种方式。
 
 
 

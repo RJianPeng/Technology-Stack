@@ -51,19 +51,21 @@ select * from table_test where test_id = 1
 ```
 这种优化方式说明了表上的索引与具体使用并不匹配，需要考虑进一步优化索引。
 
-
-
 当发起一个对覆盖索引的查询时，explain的extra字段会看到Using Index字段
+（覆盖索引：查询的列在索引列中，这个时候使用二级索引可以满足查询需求，不需要再通过一级索引进行查询）
 
 ### 5.4.1 支持多种过滤条件
-最左前缀索引匹配遇到范围就会停止匹配，范围索引即in()/大于小于的情况，所以这种时候尽可能把范围查找的字段放在索引的后面
+最左前缀索引匹配遇到范围查询就会停止匹配，所以这种时候尽可能把范围查找的字段放在索引的后面，以便优化器能够使用尽可能多的索引列。
+
+范围查询：即select * from a where a.id > xxx 类似于这种场景，而select * from a where a.id in(xxx,xxx)这种场景，
+则为多个等值条件查询，不会导致最左前缀索引匹配停止。
 
 分页查询，页数过多的时候可能导致性能变差，可以根据二级索引覆盖主键的特性，现根据二级索引分页取出主键，然后根据主键聚簇索引的特性快速取到需要的分页数据
 ```
 select * from test_table join (select id from test_table where a= ‘test’ order by b limit 1000,10) as x using id
 ```
 
-## explain结果集
+## explain结果集s
 ### type字段
 * 1.index：说明用了索引扫描做排序
 

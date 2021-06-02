@@ -22,6 +22,7 @@ cache.invalidate(key);
 
 ### 同步加载
 ```
+//方式一
 LoadingCache<String, Object> loadingCache = Caffeine.newBuilder()
         .maximumSize(10_000)
         .expireAfterWrite(10, TimeUnit.MINUTES)
@@ -32,6 +33,18 @@ String key = "key";
 // 查询并在缺失的情况下使用同步的方式即createExpensiveGraph方法来查询到值
 //caffeine会将该方法返回值同步到缓存中，不需要使用方手动执行
 Object graph = loadingCache.get(key);
+
+
+
+
+
+//方式二
+LoadingCache<String,Object> loadingCache =  Caffeine.newBuilder()
+                .recordStats()
+                .maximumSize(1000)
+                .expireAfterWrite(10, TimeUnit.MINUTES)
+                .refreshAfterWrite(5, TimeUnit.MINUTES)
+                .build(localCacheLoader);
 ```
 
 ### 异步加载
@@ -53,3 +66,15 @@ CompletableFuture<Map<String, Object>> graphs = asyncLoadingCache.getAll(keys);
 // 异步cache转同步cache
 loadingCache = asyncLoadingCache.synchronous();
 ```
+
+
+## caffeine使用中的一些重要参数
+* expireAfterWrite：自最后一次写入后的过期时间
+* expireAfterAccess：自最后一次访问（读/写）的过期时间
+（afterWrite和afterAccess同时配置的时候不报错，但是access已经包含了write TODO 测试具体生效的配置）
+* refreshAfterWrite(重要配置):数据刷新策略，在写入时间阈值后更新数据
+
+
+
+## caffeine使用踩坑
+* 1.重复设置配置并不会覆盖老的配置，而是直接抛异常（TODO 这个地方后面看caffeine的源码时可以看看）
