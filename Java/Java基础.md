@@ -302,6 +302,22 @@ Error 和 RuntimeException 以及他们的子类。javac在编译时，不会提
 * 最后，检查异常和非检查异常都是针对编译过程来说的
 
 
+### try catch finally搭配使用场景
+finally中的代码块会在当前方法执行结束之前执行。
+具体样例：
+* try和catch中有return,finally中没有return,且finally中没有对try或catch中要return的数据进行操作的代码，这种情况就是普通的finally执行结束return
+
+* try和catch中有return,finally中没有return,但是finally中有对try或catch中要return的数据进行操作的代码，这种情况如果return的数据是基础数据类型，那么finally的操作不会影响最后的返回值，如果是封装数据类型且是对里面的属性数据进行操作，
+那么是会影响到返回值的，原因可以结合Java方法中传值还是传参的情况分析，同理。
+
+* try和catch中有return，finally中也有return，这个时候finally的return会先执行
+
+* catch中有throw exception，finally中有return，这个时候return会抢先执行，不会执行抛出异常的语句。
+
+参考自https://www.cnblogs.com/sunshineweb/p/7656463.html
+
+
+
 # 八、Java内部类
 
 ## 成员内部类
@@ -631,5 +647,8 @@ m.invoke(list,100);
 # 常见注解
 ### @Nonnull和@Nullable
 @Nonnull会对被注解的部分进行空指针校验，@Nullable不会对被注解的部分进行空指针校验，当然不加也不会校验
+
+### @SuppressWarnings
+作用：告诉编译器忽略指定的警告，不用在编译完成后出现警告信息
 
 

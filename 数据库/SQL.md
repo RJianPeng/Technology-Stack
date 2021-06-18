@@ -174,8 +174,11 @@ https://www.jianshu.com/p/3419550152d5
 ### select fro update
 查询某条数据，并给这条数据加锁，后期可以用于更新；一般情况可以使用分布式锁替换这种方式。
 
+### insert ignore into
+insert ignore into:当插入数据时，如果出现错误：如重复数据，将不返回错误，只以警告形式返回，且不会执行该语句。
 
-
+### replace into
+如果存在primary/unique相同的记录，则先删除掉，再插入新纪录
 
 
 

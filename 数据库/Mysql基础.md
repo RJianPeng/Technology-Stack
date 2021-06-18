@@ -171,18 +171,26 @@ alter table {table_name} change old_column new_column …
 
 
 # 连接池
-## JDBC连接池
+## TOMCAT JDBC连接池
 ```
 连接池参数：
-jdbc.initialSize=0 //初始化连接
-jdbc.maxActive=30 //连接池的最大数据库连接数，设为0表示无限制
-jdbc.maxIdle=20 //没有人用连接的时候，最大闲置的连接个数，设置为0时，表示没有限制。
-jdbc.maxWait=1000 //超时等待时间以毫秒为单位
-jdbc.removeAbandoned=true //是否自动回收超时连接
-jdbc.removeAbandonedTimeout=60 //设置被遗弃的连接的超时的时间（以秒数为单位），即当一个连接被遗弃的时间超过设置的时间，则它会自动转换成可利用的连接。默认的超时时间是300秒。
-jdbc.logAbandoned = true //是否在自动回收超时连接的时候打印连接的超时错误
-jdbc.validationQuery=select 1 from dual //给出一条简单的sql语句进行验证
-jdbc.testOnBorrow=true //在取出连接时进行有效验证
+initialSize=0 //初始化连接
+maxActive=30 //连接池的最大数据库连接数，设为0表示无限制
+maxIdle=20 //没有人用连接的时候，最大闲置的连接个数，设置为0时，表示没有限制。
+maxWait=1000 //超时等待时间以毫秒为单位
+removeAbandoned=true //是否自动回收超时连接
+removeAbandonedTimeout=60 //设置被遗弃的连接的超时的时间（以秒数为单位），即当一个连接被遗弃的时间超过设置的时间，则它会自动转换成可利用的连接。默认的超时时间是300秒。
+logAbandoned = true //是否在自动回收超时连接的时候打印连接的超时错误
+validationQuery=select 1 from dual //给出一条简单的sql语句进行验证
+testOnBorrow=true //在从连接池中取出连接时进行有效验证
+testOnReturn=true //在将连接放回池子中时进行有效验证
+testWhileIdle=true//连接池根据timeBetweenEvictionRunsMills参数，定时检查连接池中的连接是否有效。检查失效的
+剔除，如果连接空闲时间超过minEvictableIdleTimeMills也会被剔除
+validationInterval // 为了避免高QPS场景下探活的性能损耗，连接池会记录上一次连接探活生效的时间，下一次探活和上一次探活的
+时间间隔如果小于validationInterval，那么会直接判定为生效连接
+testWhileIdle=true//不检测busy连接
 ```
+关于tomcat jdbc连接池的探活，一般有两种探活机制，定时探活机制和连接出/归池探活（都在上面配置里面了）。
+
 
 

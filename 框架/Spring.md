@@ -79,6 +79,15 @@ Object proceed(Object[] var1) throws Throwable
 ### @Around
 环绕通知，包裹了切点方法的整个执行周期
 
+### @Transactional
+spring的事物使用注解，通过aop的方式实现，提供的是非侵入式的实现方式
+修饰方法，表示当前方法中对同一个库的操作打包为一个事物。
+默认的connection是自动提交的，所以被该注解修饰的方法，在进入方法的时候就会获取链接，并且把这个链接放入ThreadLocal中，并且将自动提交设置为false，之后在这个方法中，对db的操作都会从ThreadLocal中获取这个连接。
+spring事物参考文档：https://blog.csdn.net/fuqianming/article/details/100560200
+ps:数据库底层的事物提交和回滚都是通过binglog和redolog实现的(//TODO 这里后面可以再复习下)
+
+
+
 # 拦截器
 ## HandlerInterceptor
 ```

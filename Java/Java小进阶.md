@@ -128,3 +128,16 @@ System.out.println(userVO.toString());
 
 ## 定时任务执行
 Java定时任务实现方式：
+
+
+## 实战碰到的知识点
+### 时间戳的获取
+Java中常见的时间戳获取方式有两种：System.nanoTime()和System.currentTimeMills()。
+##### System.nanoTime优势
+其中，nanoTime()的精确度更高，如果要更精密的计算执行某部分代码所消耗的时间，该方法会测量的更精确。
+System.currentTimeMills()的值是基于系统时间的，可以人为的进行修改，而Syste,.nanoTime()则不行
+
+##### System.currentTimeMills优势
+但是单独获取nanoTime()没什么意义，因为该值是随机的，无法表示当前的时间，如果要记录当前时间点，还是要用System.currentTimeMills
+另外System.currentTimeMills()得到的值能够和Date类方便的转换，但是System.nanoTime则不行
+

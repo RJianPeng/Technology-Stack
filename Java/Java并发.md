@@ -211,7 +211,7 @@ java8里面改用volatile和CAS实现线程安全
 类似于信号量，控制对互斥资源的访问线程数  acquire()获取  release()释放。信号量为0的时候acquire阻塞。
 
 ## Condition
-实现线程之间的协调，通过await（）使线程等待，通过signal和signalAll()进行唤醒，相对于wait方法，await可以指定等待的条件，更加灵活。await方法还可以将与其Condition绑定的Reetranlock的锁释放掉，为唤醒的时候重新获得。condition的获得必须通过reetrantlock
+实现线程之间的协调，通过await（）使线程等待，通过signal和signalAll()进行唤醒，相对于wait方法，await可以指定等待的条件，更加灵活。await方法还可以将与其Condition绑定的Reentrantlock的锁释放掉，为唤醒的时候重新获得。condition的获得必须通过reetranlock
 
 Condition的使用方式：
 ```
