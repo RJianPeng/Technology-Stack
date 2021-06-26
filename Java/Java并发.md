@@ -179,6 +179,23 @@ public ThreadPoolExecutor(int corePoolSize,
 
 # 线程安全工具类
 
+## ReentrantLock
+ReentrantLock是java.util.concurrent框架中提供的类
+
+相比于synchronized：
+* 它是jdk实现的，synchronized是jvm实现的
+* 它是等待可中断的，线程尝试获取锁，一定时间阈值内未能成功则放弃，执行另外的逻辑链路。
+* 它默认情况下是非公平的，但是也是支持公平锁，synchronized是非公平的
+
+在使用选择上，除非是必须使用ReentrantLock的特殊情况，否则有限使用synchronized,这是因为synchronized是JVM实现的一种锁机制，JVM原生支持它，并且使用synchronized不用担心没有释放锁而导致死锁问题，因为JVM会确保锁的释放。
+
+
+### Condition
+Condition是java提供用来实现等待/通知的类，它由lock对象创建，调用await()使当前线程进入阻塞，调用signal()/signalAll()尝试唤醒该线程继续执行。wait()方法会让当前线程阻塞，并会释放lock的锁。
+
+
+
+
 ## ConcurrentHashMap
 与HashMap类似，但是采用了分段锁，每一段锁控制几个桶，一个ConcurrentHashMap的多个段可以被多个线程同时访问,分段锁（Segment）继承于ReentrantLock
 java8里面改用volatile和CAS实现线程安全
@@ -211,7 +228,7 @@ java8里面改用volatile和CAS实现线程安全
 类似于信号量，控制对互斥资源的访问线程数  acquire()获取  release()释放。信号量为0的时候acquire阻塞。
 
 ## Condition
-实现线程之间的协调，通过await（）使线程等待，通过signal和signalAll()进行唤醒，相对于wait方法，await可以指定等待的条件，更加灵活。await方法还可以将与其Condition绑定的Reentrantlock的锁释放掉，为唤醒的时候重新获得。condition的获得必须通过reetranlock
+实现线程之间的协调，通过await（）使线程等待，通过signal和signalAll()进行唤醒，相对于wait方法，await可以指定等待的条件，更加灵活。await方法还可以将与其Condition绑定的ReentrantLock的锁释放掉，为唤醒的时候重新获得。condition的获得必须通过ReentrantLock
 
 Condition的使用方式：
 ```
@@ -225,6 +242,8 @@ condition.signal();
 //唤醒所有等待condition的线程
 condition.signalAll();
 ```
+
+
 
 # 乐观锁和悲观锁
 乐观锁就是很乐观，每次拿数据的时候都认为别人不会修改，所以不会上锁，但在更新的时候会检查下数据在中途是否有被修改过。适用于读多的情况，能提高吞吐量

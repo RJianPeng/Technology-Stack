@@ -129,6 +129,9 @@ public interface Iterator<E> {
 
 ## iterable
 与Iterator配合使用的是Iterable接口，这个接口的功能为返回一个Iterator，实现该接口的子接口有：Collection<E>、List<E>、Set<E>。对于实现了Iterable接口的容器，我们可以采用foreach的方式对其进行遍历，foreach可以看成使用迭代器进行遍历。
+但是在foreach中处理集合时，不能使用break和continue这两个语法，可以通过return来跳过当前循环，进入执行下一次循环。
+
+
 
 Iterable源码：
 ```
@@ -253,7 +256,14 @@ private class Itr implements Iterator<E> {
 Java中的迭代器支持这种机制。
 
 
-
+# AQS
+Java并发包很多的同步工具类底层都是基于AQS来实现的，比如我们工作中常用的Lock工具ReentrantLock、栅栏CountDownLatch、信号量Semaphore等
+等待竞争公共资源的线程都会维护在AQS成员属性维护的一个队列中，以Node的形式将Thread封装起来，Node节点状态类型包括：
+* 1-Cancelled:表示当前Node节点已经取消调度，进入该状态的节点将不会再变化
+* -1-Signal：表示后继节点在等待当前节点唤醒，后续节点入队时，会将前继节点的状态更新为Signal
+* -2-Condition：表示节点等待在Condition上，当其他线程调用了Condition的signal()方法后，Condition状态的节点将从等待队列转移到同步队列中，等待获取锁
+* -3-Propagate：共享模式下，前继节点不仅会唤醒其后继节点，同时也可能唤醒后继节点的后继节点
+* 0：新节点入队时的默认状态
 
 
 # 一些小坑
