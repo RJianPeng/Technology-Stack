@@ -103,6 +103,12 @@ for update 这种方式使用的时候需要注意：
 
 * 如果只是想表示年、日期、时间的还可以使用 year、 date、 time，它们分别占据 1、3、3 字节，而datetime就是它们的集合。
 
+
+## VARCHAR
+varchar(1024) 这里的1024具体指代需要看mysql版本号，4.x版本是字节长度  5.x是字符长度
+这个字段在底层存储中占用空间固定为1024
+
+
 # MYSQL进阶
 ## 分区表
 mysql数据库在5.1之后支持分区，划分方式为水平分区，索引方面支持分区索引-即索引和数据都在分区中。
@@ -147,6 +153,8 @@ key是数据库的物理结构，包含两种含义：约束（偏重于约束�
 
 index是数据库的物理结构，只是辅助查询的
 
+简单来说mysql中的key和index在定义上不同，前者为约束，后者为索引，但是在使用场景上，使用效果相同，因为在使用其中一个的时候会把另一个属性也带上。
+
 # 基础功能特性
 ## on duplicate key update
 插入数据时，如果插入的数据中的主键在数据库中已经存在，普通的insert的操作会报错，这个时候可以选用insert on duplicate key update
@@ -154,6 +162,8 @@ eg:
 ```
 insert into table test(id,name) values(1,'github') on duplicate key update name = 'github'//ID为主键，如果数据库中已经存在ID为1的数据，那么这个时候会更新name字段为github
 ```
+但是on duplicate key update 存在问题，即一个表不一定只有一个唯一索引，使用这种方式有可能会因为预想之外的原因产生更新而不是插入。
+
 
 ## explain的各个字段详解
 * id 查询序号：即为sql语句执行的顺序

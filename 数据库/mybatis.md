@@ -69,7 +69,7 @@
 这种方式需要在最后加where条件，否则会对所有的数据进行case when的判定和更新
 
 
-* 3.on duplicate key update方式更新（不支持第三种方式，有可能会造成数据丢失和主从上表的自增id值不一致)
+* 3.on duplicate key update方式更新（不支持第三种方式，有可能会造成数据丢失和主从上表的自增id值不一致，另外可能出现因为预期之外的唯一键重复而产生的更新)
 ```
 <insert id="updateBatch" parameterType="java.util.List">
         insert into standard_relation(id,relation_type, standard_from_uuid,

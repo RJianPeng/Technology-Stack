@@ -86,6 +86,8 @@ spring的事物使用注解，通过aop的方式实现，提供的是非侵入�
 spring事物参考文档：https://blog.csdn.net/fuqianming/article/details/100560200
 ps:数据库底层的事物提交和回滚都是通过binglog和redolog实现的(//TODO 这里后面可以再复习下)
 
+#### spring事务的传播性
+就是同时存在多个事务的时候，Spring如何处理它们的问题
 
 
 # 拦截器
