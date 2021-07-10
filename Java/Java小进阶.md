@@ -141,3 +141,23 @@ System.currentTimeMills()的值是基于系统时间的，可以人为的进行�
 但是单独获取nanoTime()没什么意义，因为该值是随机的，无法表示当前的时间，如果要记录当前时间点，还是要用System.currentTimeMills
 另外System.currentTimeMills()得到的值能够和Date类方便的转换，但是System.nanoTime则不行
 
+
+## 柯里化代码写法
+定义：维基百科对柯里化的定义是把接受多个参数的函数转变成接受一个单一参数的函数，并且返回接受雨下的参数并且返回结果的新函数的技术。底层的技术支撑就是函数式编程。
+```
+eg:
+public Integer add(Integer a, Integer b) {
+      return a+b;
+}
+
+public Function<Integer,Integer> getAddFunction(int a){
+      return (b) -> a+b;
+}
+
+add(1,2);
+getAddFunction(1).apply(2);
+//这两种实现方式结果是一致的，第二种对代码的复用性更好，第二种就是柯里式简单的实现
+```
+柯里式的好处：
+* 1.参数复用，以eg为例，其中的参数a可以多次进行复用
+* 2.提前确认部分参数，避免过多的逻辑判断

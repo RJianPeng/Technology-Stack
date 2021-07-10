@@ -1,8 +1,10 @@
 * [Mysql架构](#mysql架构)
 * [并发控制](#并发控制)
-* [基础数据类型](#基础数据类型)
 * [事务](#事务)
-* [功能特性](#基础功能特性)
+* [基础数据类型](#基础数据类型)
+* [基础功能特性](#基础功能特性)
+* [连接池](#连接池)
+* [mysql进阶](#mysql进阶)
 
 # Mysql架构
 Mysql架构图如下：
@@ -43,6 +45,8 @@ InnoDB默认是行级别的锁，当有明确指定的主键时候，是行级�
 for update 这种方式使用的时候需要注意：
 * 1.仅仅适用于InnoDB，并且必须开启事务。
 * 2.和for update nowait区别，for update阻塞其他事务，nowait直接拒绝其他事务。
+
+
 # 事务
 事务：一组原子性的SQL查询
 
@@ -64,8 +68,6 @@ for update 这种方式使用的时候需要注意：
 
 ### 持久性（durability）
 一个事务所做的修改在提交之后，其所做的修改就会永久保存到数据库中。
-
-
 
 
 
@@ -107,6 +109,78 @@ for update 这种方式使用的时候需要注意：
 ## VARCHAR
 varchar(1024) 这里的1024具体指代需要看mysql版本号，4.x版本是字节长度  5.x是字符长度
 这个字段在底层存储中占用空间固定为1024
+
+# 基础功能特性
+## on duplicate key update
+插入数据时，如果插入的数据中的主键在数据库中已经存在，普通的insert的操作会报错，这个时候可以选用insert on duplicate key update
+eg:
+```
+insert into table test(id,name) values(1,'github') on duplicate key update name = 'github'//ID为主键，如果数据库中已经存在ID为1的数据，那么这个时候会更新name字段为github
+```
+但是on duplicate key update 存在问题，即一个表不一定只有一个唯一索引，使用这种方式有可能会因为预想之外的原因产生更新而不是插入。
+
+
+## explain的各个字段详解
+* id 查询序号：即为sql语句执行的顺序,包含自查询的查询，explain的结果包含多行，以此ID区分执行顺序，ID越大越先执行。
+* select type：查询类型，有以下几种值：SIMPLE，PRIMARY，UNION。SIMPLE表示简单的查询，没有union和子查询什么的。PRIMARY，在有子查询的sql中，最外层的查询语句就是primary类型。UNION，union语句中第二个或者是后面那个就是这种查询类型
+* table：输出的数据所用的表
+* type：连接类型，有多个参数。1.system，表仅有一行，很少出现这种情况。    2.const，表最多有一个匹配行，const用于比较primary key 或者unique索引。因为只匹配一行数据，所以很快。type参数从最佳到最差顺序：
+null>system/const>eq_ref>ref>ref_or_null>index_merge>range>index>all。type=null：在优化过程中就已经得到结果，不用再访问表或者索引。 type=const/system：在整个查询过程中这个表最多只会有一条匹配的行,一定是泳道primary key 或者unique key的情况下才会是const。 
+type=eq_ref：使用有唯一性索引查找（主键或唯一性索引）。 type=ref：非唯一性索引访问，它返回所有匹配某个单个值的行，它是查找和扫描的混合体。type=ref_or_null：和ref情况类似，只是返回结果中可能包含空行。以上这五种情况都是很理想的索引使用情况。
+type=range：对索引进行范围扫描的情况。 type=index：该连接类型与ALL相同都是扫描表，但这种类型只扫描索引树，而ALL是对数据表文件的扫描
+* possible_keys：提示可能使用哪个索引会在该表中找到行，不太重要
+* keys：实际查询中使用的索引
+* key_len：mysql使用的索引长度
+* rows：查询时遍历的行数
+* extra：包含查询mysql的详细信息。Not exists：不存在信息。 range checked for each record：没有找到合适的索引。 Using index/Using index condition：本次查询使用了覆盖索引，避免访问表的数据行，效率不错。
+using temporary：mysql对查询结果进行排序对时候使用了一张临时表。using filesort：mysql对数据不是按照表内的索引顺序进行读取，而是使用了其他字段重新排序。using where：表示本次查询进行了后过滤，所谓后过滤，就是先读取整行数据，再检查此行是否符合where条件。
+
+## 修改字段名称和属性
+alter table {table_name} change old_column new_column …
+
+## mysql的常用插入操作
+### insert into
+插入时，数据库会检查主键和唯一键，出现重复则报错
+
+### replace into
+插入时，数据库检查主键和唯一键，出现重复的情况，会delete老的重复数据，insert新的数据进去，多个唯一键的情况下，一行的写入可能导致多行的删除。这种插入方式，如果新的数据部分字段没有值，会丢失原有数据字段的值
+
+### insert ignore
+插入时，数据库检查主键和唯一键，出现重复的情况，则忽略这条新数据
+
+## mysql中字符的拼接
+### group_concat 
+对分组后的列进行聚合拼接，分隔符默认为','
+```
+eg:select group_concat(column) from table group by other_column
+```
+
+
+
+
+# 连接池
+## TOMCAT JDBC连接池
+```
+连接池参数：
+initialSize=0 //初始化连接
+maxActive=30 //连接池的最大数据库连接数，设为0表示无限制
+maxIdle=20 //没有人用连接的时候，最大闲置的连接个数，设置为0时，表示没有限制。
+maxWait=1000 //超时等待时间以毫秒为单位
+removeAbandoned=true //是否自动回收超时连接
+removeAbandonedTimeout=60 //设置被遗弃的连接的超时的时间（以秒数为单位），即当一个连接被遗弃的时间超过设置的时间，则它会自动转换成可利用的连接。默认的超时时间是300秒。
+logAbandoned = true //是否在自动回收超时连接的时候打印连接的超时错误
+validationQuery=select 1 from dual //给出一条简单的sql语句进行验证
+testOnBorrow=true //在从连接池中取出连接时进行有效验证
+testOnReturn=true //在将连接放回池子中时进行有效验证
+testWhileIdle=true//连接池根据timeBetweenEvictionRunsMills参数，定时检查连接池中的连接是否有效。检查失效的
+剔除，如果连接空闲时间超过minEvictableIdleTimeMills也会被剔除
+validationInterval // 为了避免高QPS场景下探活的性能损耗，连接池会记录上一次连接探活生效的时间，下一次探活和上一次探活的
+时间间隔如果小于validationInterval，那么会直接判定为生效连接
+testWhileIdle=true//不检测busy连接
+```
+关于tomcat jdbc连接池的探活，一般有两种探活机制，定时探活机制和连接出/归池探活（都在上面配置里面了）。
+
+
 
 
 # MYSQL进阶
@@ -155,52 +229,6 @@ index是数据库的物理结构，只是辅助查询的
 
 简单来说mysql中的key和index在定义上不同，前者为约束，后者为索引，但是在使用场景上，使用效果相同，因为在使用其中一个的时候会把另一个属性也带上。
 
-# 基础功能特性
-## on duplicate key update
-插入数据时，如果插入的数据中的主键在数据库中已经存在，普通的insert的操作会报错，这个时候可以选用insert on duplicate key update
-eg:
-```
-insert into table test(id,name) values(1,'github') on duplicate key update name = 'github'//ID为主键，如果数据库中已经存在ID为1的数据，那么这个时候会更新name字段为github
-```
-但是on duplicate key update 存在问题，即一个表不一定只有一个唯一索引，使用这种方式有可能会因为预想之外的原因产生更新而不是插入。
-
-
-## explain的各个字段详解
-* id 查询序号：即为sql语句执行的顺序
-* select type：查询类型，有以下几种值：SIMPLE，PRIMARY，UNION。SIMPLE表示简单的查询，没有union和子查询什么的。PRIMARY，在有子查询的sql中，最外层的查询语句就是primary类型。UNION，union语句中第二个或者是后面那个就是这种查询类型（union多个语句的时候呢？是只有最后那个是这种类型吗？）
-* table：输出的数据所用的表
-* type：连接类型，有多个参数。1.system，表仅有一行，很少出现这种情况。    2.const，表最多有一个匹配行，const用于比较primary key 或者unique索引。因为只匹配一行数据，所以很快。
-* possible_keys：提示使用哪个索引会在该表中找到行，不太重要
-* keys：实际查询中使用的索引
-* key_len：mysql使用的索引长度
-* rows：查询时便利的行数
-
-# 基础操作
-## 修改字段名称和属性
-alter table {table_name} change old_column new_column …
-
-
-# 连接池
-## TOMCAT JDBC连接池
-```
-连接池参数：
-initialSize=0 //初始化连接
-maxActive=30 //连接池的最大数据库连接数，设为0表示无限制
-maxIdle=20 //没有人用连接的时候，最大闲置的连接个数，设置为0时，表示没有限制。
-maxWait=1000 //超时等待时间以毫秒为单位
-removeAbandoned=true //是否自动回收超时连接
-removeAbandonedTimeout=60 //设置被遗弃的连接的超时的时间（以秒数为单位），即当一个连接被遗弃的时间超过设置的时间，则它会自动转换成可利用的连接。默认的超时时间是300秒。
-logAbandoned = true //是否在自动回收超时连接的时候打印连接的超时错误
-validationQuery=select 1 from dual //给出一条简单的sql语句进行验证
-testOnBorrow=true //在从连接池中取出连接时进行有效验证
-testOnReturn=true //在将连接放回池子中时进行有效验证
-testWhileIdle=true//连接池根据timeBetweenEvictionRunsMills参数，定时检查连接池中的连接是否有效。检查失效的
-剔除，如果连接空闲时间超过minEvictableIdleTimeMills也会被剔除
-validationInterval // 为了避免高QPS场景下探活的性能损耗，连接池会记录上一次连接探活生效的时间，下一次探活和上一次探活的
-时间间隔如果小于validationInterval，那么会直接判定为生效连接
-testWhileIdle=true//不检测busy连接
-```
-关于tomcat jdbc连接池的探活，一般有两种探活机制，定时探活机制和连接出/归池探活（都在上面配置里面了）。
 
 
 

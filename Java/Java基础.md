@@ -357,6 +357,15 @@ Thread t = new Thread(new Runnable() {
         });
 ```
 
+### 匿名内部类和lambda表达式
+相同点：
+* 都可以直接访问final/effectively final的变量
+* 返回的对象都可以调用继承自接口的default方法
+
+不同点：
+* lambda表达式只能为函数式接口查u给你家爱你对象
+* lambda表达式的代码块内不能调用default方法。
+
 ## 静态内部类
 不能使用外部类的非static方法和变量
 

@@ -275,6 +275,12 @@ Serial老年代版本，标记整理算法
 3.最终标记
 4.筛选回收
 
+### ZGC-The Z Garbage Collector
+ZGC是Java11中推出的一款低延迟垃圾回收器，它的设计目标包括：1.STW时间不超过10ms；2.STW时间不会随着堆的大小，或者活跃对象的大小而增加
+
+总体来说ZGC采用了空间换时间的策略，通过牺牲一些空间，来降低垃圾回收过程中STW的时间。
+具体文档可见：https://tech.meituan.com/2020/08/06/new-zgc-practice-in-meituan.html
+
 
 ## 对象内存分配策略
 * 1.大多数情况下，对象在新生代Eden区中分配。当Eden区没有足够空间进行分配时虚拟机将执行一次Minor GC
