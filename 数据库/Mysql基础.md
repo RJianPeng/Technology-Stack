@@ -96,12 +96,12 @@ for update 这种方式使用的时候需要注意：
 * 时间范围为‘1000-01-01 00:00:00’至‘9999-12-31 23:59:59’
 * DATATIM不受时区影响，TIMESTAMP受时区影响（TIMESTAMP在存取的过程中会出现本地时区时间<->UTC时区时间<->int类型的转换流程）。
 * 对应的jdbcType为DATETIME 对应Java类型为TimeStamp
-* DATATIME也可以精确至毫秒，生命方式和TIMESTAMP相同
+* DATATIME也可以精确至毫秒，声明方式和TIMESTAMP相同
 
 ### TIMESTAMP和DATETIME的选择
 * 如果服务器时区不一样就建议选择 datetime。
 
-* 如果是想要使用自动插入时间或者自动更新时间功能的，可以使用timestamp。
+* 如果是想要使用自动插入时间或者自动更新时间功能的，可以使用timestamp，现在current_timestamp在高版本(5.6好像)中也可以给DATETIME使用。
 
 * 如果只是想表示年、日期、时间的还可以使用 year、 date、 time，它们分别占据 1、3、3 字节，而datetime就是它们的集合。
 
@@ -109,6 +109,7 @@ for update 这种方式使用的时候需要注意：
 ## VARCHAR
 varchar(1024) 这里的1024具体指代需要看mysql版本号，4.x版本是字节长度  5.x是字符长度
 这个字段在底层存储中占用空间固定为1024
+除了char和varchar，其他类型后面括号里的数字都不影响存储
 
 # 基础功能特性
 ## on duplicate key update

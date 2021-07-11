@@ -363,7 +363,7 @@ Thread t = new Thread(new Runnable() {
 * 返回的对象都可以调用继承自接口的default方法
 
 不同点：
-* lambda表达式只能为函数式接口查u给你家爱你对象
+* lambda表达式只能为函数式接口创建对象
 * lambda表达式的代码块内不能调用default方法。
 
 ## 静态内部类
@@ -567,16 +567,16 @@ ThreadLocal的原理就是在Thread中有一个ThreadLocalMap，里面存的valu
 
 # 十二、Java常见类
 
-## Calendar
+### Calendar
 为特定瞬间与一组诸如 YEAR、MONTH、DAY_OF_MONTH、HOUR 等日历字段之间的转换提供了一些方法
 （懒得写了嘿嘿） 详见https://blog.csdn.net/ytasdfg/article/details/81086118
 
 
-## DateTimeFormatter
+### DateTimeFormatter
 使用新的LocalDateTime或ZonedLocalDateTime时，我们要进行格式化显示，就要使用DateTimeFormatter。
 相比于SimpleDataFormat,DateTimeFormatter是线程安全的，不可变的。SimpleDataFormat线程不安全是因为在format函数中，Date转String时使用了他的成员变量Calendar来处理时间，多线程的情况下会出现脏数据问题。
 
-## ObjectMapper
+### ObjectMapper
 fasterxml.jackson.databind.ObjectMapper,json和其他各种格式的转换工具类。
 ```
 //常见配置
@@ -585,8 +585,20 @@ objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")); //设�
 objectMapper.enable(SerializationFeature.INDENT_OUTPUT);//转换为格式化的json
 ```
 
+## 字符串的拼接
+```
+//on()里面为分隔符 join()里面为列表
+Joiner.on(",").join(list);
 
+//等同于上面的方法
+String.join(",",list)
+```
 
+## BooleanUtils
+```
+//这种方法虽然实现简单，但是可读性非常高，逻辑清晰。注意，isNotTrue包含为null的情况
+BooleanUtils.isNotTrue();
+```
 
 
 # 十三、反射
